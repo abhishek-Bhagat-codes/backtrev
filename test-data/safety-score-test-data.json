@@ -1,0 +1,127 @@
+{
+  "endpoint": {
+    "method": "GET",
+    "url": "/api/safety-score",
+    "description": "Fetch safety score for authenticated user"
+  },
+  "sampleResponses": {
+    "highScore": {
+      "safetyScore": {
+        "_id": "507f1f77bcf86cd799439021",
+        "userId": "507f191e810c19729de860ea",
+        "safetyScore": 85,
+        "lastUpdated": "2024-05-20T10:30:00.000Z"
+      }
+    },
+    "mediumScore": {
+      "safetyScore": {
+        "_id": "507f1f77bcf86cd799439022",
+        "userId": "507f191e810c19729de860ea",
+        "safetyScore": 65,
+        "lastUpdated": "2024-05-20T14:15:00.000Z"
+      }
+    },
+    "lowScore": {
+      "safetyScore": {
+        "_id": "507f1f77bcf86cd799439023",
+        "userId": "507f191e810c19729de860ea",
+        "safetyScore": 35,
+        "lastUpdated": "2024-05-20T18:45:00.000Z"
+      }
+    },
+    "veryHighScore": {
+      "safetyScore": {
+        "_id": "507f1f77bcf86cd799439024",
+        "userId": "507f191e810c19729de860ea",
+        "safetyScore": 95,
+        "lastUpdated": "2024-05-21T09:00:00.000Z"
+      }
+    },
+    "borderlineScore": {
+      "safetyScore": {
+        "_id": "507f1f77bcf86cd799439025",
+        "userId": "507f191e810c19729de860ea",
+        "safetyScore": 50,
+        "lastUpdated": "2024-05-21T12:30:00.000Z"
+      }
+    },
+    "errorResponse": {
+      "message": "Safety score not found"
+    }
+  },
+  "scoreRanges": {
+    "verySafe": {
+      "min": 90,
+      "max": 100,
+      "description": "Very Safe (Excellent)"
+    },
+    "safe": {
+      "min": 75,
+      "max": 89,
+      "description": "Safe (Good)"
+    },
+    "moderate": {
+      "min": 60,
+      "max": 74,
+      "description": "Moderate (Fair)"
+    },
+    "caution": {
+      "min": 45,
+      "max": 59,
+      "description": "Caution (Below Average)"
+    },
+    "risky": {
+      "min": 30,
+      "max": 44,
+      "description": "Risky (Poor)"
+    },
+    "veryRisky": {
+      "min": 0,
+      "max": 29,
+      "description": "Very Risky (Critical)"
+    }
+  },
+  "testDataForDatabase": {
+    "insertOne": {
+      "userId": "507f191e810c19729de860ea",
+      "safetyScore": 85,
+      "lastUpdated": "2024-05-20T10:30:00.000Z"
+    },
+    "sampleScores": [
+      {
+        "userId": "507f191e810c19729de860ea",
+        "safetyScore": 95,
+        "lastUpdated": "2024-05-20T10:00:00.000Z"
+      },
+      {
+        "userId": "507f191e810c19729de860ea",
+        "safetyScore": 75,
+        "lastUpdated": "2024-05-20T11:00:00.000Z"
+      },
+      {
+        "userId": "507f191e810c19729de860ea",
+        "safetyScore": 55,
+        "lastUpdated": "2024-05-20T12:00:00.000Z"
+      },
+      {
+        "userId": "507f191e810c19729de860ea",
+        "safetyScore": 40,
+        "lastUpdated": "2024-05-20T13:00:00.000Z"
+      },
+      {
+        "userId": "507f191e810c19729de860ea",
+        "safetyScore": 20,
+        "lastUpdated": "2024-05-20T14:00:00.000Z"
+      }
+    ]
+  },
+  "curlExample": "curl -X GET http://localhost:3000/api/safety-score -H \"Authorization: Bearer YOUR_JWT_TOKEN\"",
+  "notes": {
+    "authentication": "Requires: Authorization: Bearer <jwt_token>",
+    "scoreRange": "Safety score must be between 0 and 100",
+    "userId": "Replace userId with actual user ID from your database",
+    "onePerUser": "Only one safety score record should exist per user"
+  }
+}
+
+

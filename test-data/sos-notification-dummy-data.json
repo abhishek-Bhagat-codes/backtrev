@@ -1,0 +1,100 @@
+{
+  "sosNotifications": [
+    {
+      "userId": "507f191e810c19729de860ea",
+      "currentLocation": "Mumbai, Maharashtra",
+      "latitude": 19.0760,
+      "longitude": 72.8777,
+      "status": "pending",
+      "message": "Need immediate help! Stranded at Mumbai airport",
+      "createdAt": "2024-05-20T10:30:00.000Z",
+      "acknowledgedAt": null,
+      "resolvedAt": null
+    },
+    {
+      "userId": "507f191e810c19729de860ea",
+      "currentLocation": "Delhi, India",
+      "latitude": 28.7041,
+      "longitude": 77.1025,
+      "status": "acknowledged",
+      "message": "Emergency situation at Connaught Place",
+      "createdAt": "2024-05-20T14:00:00.000Z",
+      "acknowledgedAt": "2024-05-20T14:15:00.000Z",
+      "resolvedAt": null
+    },
+    {
+      "userId": "507f191e810c19729de860ea",
+      "currentLocation": "Bangalore City Center",
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "status": "resolved",
+      "message": "SOS request from Bangalore",
+      "createdAt": "2024-05-19T09:00:00.000Z",
+      "acknowledgedAt": "2024-05-19T09:10:00.000Z",
+      "resolvedAt": "2024-05-19T09:45:00.000Z"
+    },
+    {
+      "userId": "507f191e810c19729de860ea",
+      "currentLocation": "Chennai Beach",
+      "latitude": 13.0827,
+      "longitude": 80.2707,
+      "status": "pending",
+      "message": "Help needed urgently",
+      "createdAt": "2024-05-21T08:00:00.000Z",
+      "acknowledgedAt": null,
+      "resolvedAt": null
+    },
+    {
+      "userId": "507f191e810c19729de860ea",
+      "currentLocation": "Kolkata, West Bengal",
+      "latitude": 22.5726,
+      "longitude": 88.3639,
+      "status": "acknowledged",
+      "message": "Emergency assistance required",
+      "createdAt": "2024-05-21T12:30:00.000Z",
+      "acknowledgedAt": "2024-05-21T12:35:00.000Z",
+      "resolvedAt": null
+    },
+    {
+      "userId": "507f191e810c19729de860ea",
+      "currentLocation": "Hyderabad, Telangana",
+      "latitude": 17.3850,
+      "longitude": 78.4867,
+      "status": "pending",
+      "message": "SOS alert activated",
+      "createdAt": "2024-05-21T15:00:00.000Z",
+      "acknowledgedAt": null,
+      "resolvedAt": null
+    },
+    {
+      "userId": "507f191e810c19729de860ea",
+      "currentLocation": "Pune, Maharashtra",
+      "latitude": 18.5204,
+      "longitude": 73.8567,
+      "status": "resolved",
+      "message": "Need help immediately",
+      "createdAt": "2024-05-18T16:00:00.000Z",
+      "acknowledgedAt": "2024-05-18T16:05:00.000Z",
+      "resolvedAt": "2024-05-18T16:30:00.000Z"
+    },
+    {
+      "userId": "507f191e810c19729de860ea",
+      "currentLocation": "19.0380, 72.8520",
+      "latitude": 19.0380,
+      "longitude": 72.8520,
+      "status": "pending",
+      "message": null,
+      "createdAt": "2024-05-22T10:00:00.000Z",
+      "acknowledgedAt": null,
+      "resolvedAt": null
+    }
+  ],
+  "notes": {
+    "userId": "Replace with actual user ID from your database",
+    "status": "pending, acknowledged, or resolved",
+    "message": "Optional field - can be null",
+    "coordinates": "Latitude and longitude are required",
+    "timestamps": "Use ISO 8601 format"
+  }
+}
+

@@ -1,0 +1,216 @@
+{
+  "endpoint": {
+    "createSOS": "POST /api/emergency-notifications/sos",
+    "fetchAll": "GET /api/sos-notifications",
+    "fetchSingle": "GET /api/sos-notifications/:sosNotificationId"
+  },
+  "requestExamples": {
+    "withCoordinates": {
+      "latitude": 19.0760,
+      "longitude": 72.8777,
+      "currentLocation": "Mumbai, Maharashtra"
+    },
+    "withCoordinatesOnly": {
+      "latitude": 19.0760,
+      "longitude": 72.8777
+    },
+    "withMessage": {
+      "latitude": 19.0760,
+      "longitude": 72.8777,
+      "currentLocation": "Mumbai, Maharashtra",
+      "message": "Need immediate help!"
+    },
+    "withoutCoordinates": {},
+    "delhi": {
+      "latitude": 28.7041,
+      "longitude": 77.1025,
+      "currentLocation": "Near Connaught Place, New Delhi",
+      "message": "Emergency situation at Connaught Place"
+    },
+    "bangalore": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "currentLocation": "Bangalore City Center",
+      "message": "SOS request from Bangalore"
+    },
+    "chennai": {
+      "latitude": 13.0827,
+      "longitude": 80.2707,
+      "currentLocation": "Chennai Beach",
+      "message": "Help needed urgently"
+    },
+    "kolkata": {
+      "latitude": 22.5726,
+      "longitude": 88.3639,
+      "currentLocation": "Kolkata, West Bengal",
+      "message": "Emergency assistance required"
+    },
+    "hyderabad": {
+      "latitude": 17.3850,
+      "longitude": 78.4867,
+      "currentLocation": "Hyderabad, Telangana",
+      "message": "SOS alert activated"
+    },
+    "pune": {
+      "latitude": 18.5204,
+      "longitude": 73.8567,
+      "currentLocation": "Pune, Maharashtra",
+      "message": "Need help immediately"
+    }
+  },
+  "coordinates": {
+    "mumbai": {
+      "latitude": 19.0760,
+      "longitude": 72.8777,
+      "description": "Financial capital"
+    },
+    "delhi": {
+      "latitude": 28.7041,
+      "longitude": 77.1025,
+      "description": "National capital"
+    },
+    "bangalore": {
+      "latitude": 12.9716,
+      "longitude": 77.5946,
+      "description": "Tech hub"
+    },
+    "chennai": {
+      "latitude": 13.0827,
+      "longitude": 80.2707,
+      "description": "South India"
+    },
+    "kolkata": {
+      "latitude": 22.5726,
+      "longitude": 88.3639,
+      "description": "East India"
+    },
+    "hyderabad": {
+      "latitude": 17.3850,
+      "longitude": 78.4867,
+      "description": "South India"
+    },
+    "pune": {
+      "latitude": 18.5204,
+      "longitude": 73.8567,
+      "description": "Maharashtra"
+    },
+    "goa": {
+      "latitude": 15.2993,
+      "longitude": 74.1240,
+      "description": "Beach destination"
+    }
+  },
+  "responseExample": {
+    "success": {
+      "message": "SOS emergency notification created successfully",
+      "notification": {
+        "_id": "507f1f77bcf86cd799439081",
+        "userId": "507f191e810c19729de860ea",
+        "fullName": "John Doe",
+        "currentLocation": "Mumbai, Maharashtra",
+        "latitude": 19.0760,
+        "longitude": 72.8777,
+        "status": "pending",
+        "message": "Need immediate help!",
+        "createdAt": "2024-05-20T15:30:00.000Z",
+        "acknowledgedAt": null,
+        "resolvedAt": null
+      }
+    },
+    "errorNoLocation": {
+      "message": "Location coordinates are required. Please provide latitude and longitude, or update your current location first."
+    }
+  },
+  "fetchResponseExample": {
+    "allSOSNotifications": {
+      "sosNotifications": [
+        {
+          "_id": "507f1f77bcf86cd799439081",
+          "userId": "507f191e810c19729de860ea",
+          "fullName": "John Doe",
+          "currentLocation": "Mumbai, Maharashtra",
+          "latitude": 19.0760,
+          "longitude": 72.8777,
+          "status": "pending",
+          "message": "Need immediate help!",
+          "createdAt": "2024-05-20T15:30:00.000Z",
+          "acknowledgedAt": null,
+          "resolvedAt": null
+        },
+        {
+          "_id": "507f1f77bcf86cd799439082",
+          "userId": "507f191e810c19729de860ea",
+          "fullName": "John Doe",
+          "currentLocation": "Delhi, India",
+          "latitude": 28.7041,
+          "longitude": 77.1025,
+          "status": "pending",
+          "message": "Emergency situation",
+          "createdAt": "2024-05-20T14:00:00.000Z",
+          "acknowledgedAt": null,
+          "resolvedAt": null
+        }
+      ]
+    },
+    "singleSOSNotification": {
+      "sosNotification": {
+        "_id": "507f1f77bcf86cd799439081",
+        "userId": "507f191e810c19729de860ea",
+        "fullName": "John Doe",
+        "currentLocation": "Mumbai, Maharashtra",
+        "latitude": 19.0760,
+        "longitude": 72.8777,
+        "status": "pending",
+        "message": "Need immediate help!",
+        "createdAt": "2024-05-20T15:30:00.000Z",
+        "acknowledgedAt": null,
+        "resolvedAt": null
+      }
+    }
+  },
+  "curlExamples": {
+    "createSOSWithCoordinates": "curl -X POST http://localhost:3000/api/emergency-notifications/sos -H \"Content-Type: application/json\" -H \"Authorization: Bearer YOUR_JWT_TOKEN\" -d '{\"latitude\": 19.0760, \"longitude\": 72.8777, \"currentLocation\": \"Mumbai, Maharashtra\", \"message\": \"Need immediate help!\"}'",
+    "createSOSWithoutCoordinates": "curl -X POST http://localhost:3000/api/emergency-notifications/sos -H \"Content-Type: application/json\" -H \"Authorization: Bearer YOUR_JWT_TOKEN\" -d '{}'",
+    "fetchAll": "curl -X GET http://localhost:3000/api/sos-notifications -H \"Authorization: Bearer YOUR_JWT_TOKEN\"",
+    "fetchSingle": "curl -X GET http://localhost:3000/api/sos-notifications/SOS_NOTIFICATION_ID -H \"Authorization: Bearer YOUR_JWT_TOKEN\""
+  },
+  "testScenarios": [
+    {
+      "name": "Basic SOS with coordinates",
+      "request": {
+        "latitude": 19.0760,
+        "longitude": 72.8777
+      },
+      "expectedStatus": 201
+    },
+    {
+      "name": "SOS with message",
+      "request": {
+        "latitude": 19.0760,
+        "longitude": 72.8777,
+        "message": "Need immediate help!"
+      },
+      "expectedStatus": 201
+    },
+    {
+      "name": "SOS without coordinates (uses current location)",
+      "request": {},
+      "expectedStatus": 201,
+      "note": "Requires current location to be set first"
+    },
+    {
+      "name": "SOS without location data",
+      "request": {},
+      "expectedStatus": 400,
+      "note": "Will fail if no current location exists"
+    }
+  ],
+  "notes": {
+    "authentication": "All endpoints require JWT token in Authorization header",
+    "collection": "SOS notifications are stored in 'sos_notifications' collection",
+    "status": "Default status is 'pending'. Can be updated to 'acknowledged' or 'resolved'",
+    "locationPriority": "If coordinates provided → use them, else use current location, else error",
+    "requiredFields": "At least latitude/longitude OR current location must be available"
+  }
+}
+
