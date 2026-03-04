@@ -12,10 +12,6 @@ const sosNotificationRouter = require('./routes/sosNotification.routes.js');
 const dashboardRouter = require('./routes/dashboard.routes');
 const PORT = process.env.PORT || 3000;
 
-// Connect to MongoDB
-connectDB();
-
-
 const app = express();
 
 // Middleware
@@ -32,7 +28,12 @@ app.use('/api/sos-notifications', sosNotificationRouter);
 app.use('/api/dashboard', dashboardRouter);
 
 
+// Start the server
+connectDB().then(() => { // Ensure DB is connected before starting server
+    app.listen(PORT, () => {
+        console.log(`Server is running on http://localhost:${PORT}`);
+    });
+}).catch((err) => {
+    console.error('Failed to start server:', err);  
+});
 
-app.listen(PORT,()=>{
-    console.log(PORT);
-})
