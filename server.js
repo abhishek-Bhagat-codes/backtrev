@@ -9,6 +9,7 @@ const currentLocationRouter = require('./routes/currentLocation.routes.js');
 const safetyScoreRouter = require('./routes/safetyScore.routes.js');
 const geoFencingRouter = require('./routes/geoFencing.routes.js');
 const sosNotificationRouter = require('./routes/sosNotification.routes.js');
+const dashboardRouter = require('./routes/dashboard.routes');
 const PORT = process.env.PORT || 3000;
 
 // Connect to MongoDB
@@ -28,6 +29,7 @@ app.use('/api/current-location', currentLocationRouter);
 app.use('/api/safety-score', safetyScoreRouter);
 app.use('/api/geofencing', geoFencingRouter);
 app.use('/api/sos-notifications', sosNotificationRouter);
+app.use('/api/dashboard', dashboardRouter);
 
 
 
