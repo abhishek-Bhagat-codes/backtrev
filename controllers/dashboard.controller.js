@@ -61,10 +61,17 @@ module.exports = {
                 });
             }
 
-            return res.json({ tourists });
+            return res.json({ 
+                success: true,
+                data: { tourists },
+                message: "Tourists fetched successfully"
+            });
         } catch (err) {
             console.error(err);
-            res.status(500).json({ message: 'Server error' });
+            res.status(500).json({ 
+                success: false,
+                message: 'Server error' 
+            });
         }
     },
 
@@ -111,10 +118,17 @@ module.exports = {
             //Latest alerts first
             alerts.sort((a, b) => new Date(b.time) - new Date(a.time)); 
 
-            return res.json({ alerts });
+            return res.json({ 
+                success: true,
+                data: { alerts },
+                message: "Alerts fetched successfully"
+            });
         } catch (err) {
             console.error(err);
-            res.status(500).json({ message: 'Server error' });
+            res.status(500).json({ 
+                success: false,
+                message: 'Server error' 
+            });
         }
     },
 
@@ -130,10 +144,17 @@ module.exports = {
                 risk: g.alertLevel ? g.alertLevel.charAt(0).toUpperCase() + g.alertLevel.slice(1) : 'Medium', //1st char uppercase 
                 location: { lat: g.latitude, lng: g.longitude }
             }));
-            return res.json({ zones });
+            return res.json({ 
+                success: true,
+                data: { zones },
+                message: "Zones fetched successfully"
+            });
         } catch (err) {
             console.error(err); 
-            res.status(500).json({ message: 'Server error' });
+            res.status(500).json({ 
+                success: false,
+                message: 'Server error' 
+            });
         }
     }
 };

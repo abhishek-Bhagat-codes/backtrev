@@ -14,6 +14,7 @@ const { CurrentLocation } = require('./currentLocation');
 const { GeoFencing } = require('./geoFencing');
 const { SafetyScore } = require('./safetyScore');
 const { EmergencyNotification } = require('./emergencyNotification');
+const { SOSNotification } = require('./sosNotification');
 
 module.exports = {
   User,
@@ -23,6 +24,7 @@ module.exports = {
   CurrentLocation,
   GeoFencing,
   SafetyScore,
-  EmergencyNotification
+  EmergencyNotification,
+  SOSNotification
 };
 
