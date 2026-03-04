@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { User } = require("../models/user.js"); // import your mongoose models
 
-const JWT_SECRET = "your_jwt_secret";  // change this to env variable
+const JWT_SECRET = process.env.JWT_SECRET;
 
 module.exports = {
   // ------------------------------------
