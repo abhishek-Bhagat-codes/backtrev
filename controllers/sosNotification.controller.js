@@ -33,7 +33,7 @@ module.exports = {
     try {
       const limit = parseInt(req.query.limit) || 10; // Default limit is 10
       const status = req.query.status; // Optional filter by status
-      
+
       // Build query
       const query = {};
       if (status) {
@@ -44,10 +44,10 @@ module.exports = {
       const sosNotifications = await SOSNotification.find(query)
         .sort({ createdAt: -1 })
         .limit(limit)
-        .populate('userId', 'fullName email phoneNumber');
-      
+        .populate("userId", "fullName email phoneNumber");
+
       // Map to add fullName to each notification
-      const notificationsWithFullName = sosNotifications.map(notification => {
+      const notificationsWithFullName = sosNotifications.map((notification) => {
         const notificationObject = notification.toObject();
         notificationObject.fullName = notification.userId?.fullName || null;
         notificationObject.userEmail = notification.userId?.email || null;
@@ -58,11 +58,11 @@ module.exports = {
       // Get total count for reference
       const totalCount = await SOSNotification.countDocuments(query);
 
-      return res.json({ 
+      return res.json({
         sosNotifications: notificationsWithFullName,
         limit: limit,
         total: totalCount,
-        returned: notificationsWithFullName.length
+        returned: notificationsWithFullName.length,
       });
     } catch (err) {
       console.log(err);
@@ -96,6 +96,44 @@ module.exports = {
       console.log(err);
       res.status(500).json({ message: "Server error" });
     }
+  },
+
+  // ------------------------------------
+  //  UPDATE SOS NOTIFICATION STATUS
+  // ------------------------------------
+  updateSOSStatus: async (req, res) => {
+    try {
+      const { sosNotificationId } = req.params;
+      const { status } = req.body;
+
+      const validStatuses = ['active', 'acknowledged', 'dispatched'];
+      const backendStatus = frontendToBackend[status] || status;
+
+      if (!validStatuses.includes(backendStatus)) {
+        return res.status(400).json({ message: 'Invalid status. Use: pending, acknowledged, or resolved' });
+      }
+
+      const sosNotification = await SOSNotification.findById(sosNotificationId);
+      if (!sosNotification) {
+        return res.status(404).json({ message: 'SOS notification not found' });
+      }
+
+      const update = { status: backendStatus };
+      if (backendStatus === 'acknowledged') update.acknowledgedAt = new Date();
+      if (backendStatus === 'dispatched') update.resolvedAt = new Date();
+
+      const updated = await SOSNotification.findByIdAndUpdate(sosNotificationId, update, { new: true });
+
+      return res.json({
+        message: 'Status updated successfully',
+        sosNotification: updated
+      });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: 'Server error' });
+    }
   }
 };
+
+
 
