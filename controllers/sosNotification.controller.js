@@ -118,7 +118,7 @@ module.exports = {
         return res.status(404).json({ message: 'SOS notification not found' });
       }
 
-      const update = { status: backendStatus };
+      const update = { status: backendStatus }; 
       if (backendStatus === 'acknowledged') update.acknowledgedAt = new Date();
       if (backendStatus === 'dispatched') update.resolvedAt = new Date();
 
