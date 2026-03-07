@@ -1,19 +1,26 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import api from '../services/api';
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const { login, loading, error, setError } = useAuth();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
+    setError('');
+    setLoading(true);
     try {
-      await login({ email, password });
-    } catch {
-      // error is handled by context
+      const { token } = await api.login(email, password);
+      localStorage.setItem('token', token);
+      navigate('/');
+    } catch (err) {
+      setError(err.message || 'Login failed');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,14 +56,11 @@ const Login = () => {
             disabled={loading}
             className="w-full py-2 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 rounded-md text-white font-medium"
           >
-            {loading ? "Logging in..." : "Login"}
+            {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
         <p className="mt-4 text-gray-500 text-sm">
-          Don&apos;t have an account?{" "}
-          <Link to="/signup" className="text-blue-400 hover:underline">
-            Sign up
-          </Link>
+          Dashboard works without login. Sign up via API to create users.
         </p>
       </div>
     </div>
