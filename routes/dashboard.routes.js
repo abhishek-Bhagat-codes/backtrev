@@ -1,10 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const dashboardController = require('../controllers/dashboard.controller');
+const auth = require('../middleware/auth');
+const requirePolice = require('../middleware/police');
 
-// Dashboard routes (no auth for admin dashboard - add auth in production)
-router.get('/tourists', dashboardController.fetchTourists);
-router.get('/alerts', dashboardController.fetchAlerts);
-router.get('/zones', dashboardController.fetchZones);
+// Dashboard routes 
+router.get('/tourists', auth, requirePolice, dashboardController.fetchTourists);
+router.get('/alerts', auth, requirePolice, dashboardController.fetchAlerts);
+router.get('/zones', auth, requirePolice, dashboardController.fetchZones);
 
 module.exports = router;
