@@ -1,9 +1,13 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/auth";
+import api from "../services/api";
 
 const Signup = () => {
-  const { signup, loading, error, setError } = useAuth();
+  const { storeTokenInLS, storeUserInLS } = useAuth();
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
   const [form, setForm] = useState({
     fullName: "",
     email: "",
@@ -20,10 +24,20 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(null);
+    setLoading(true);
     try {
-      await signup(form);
-    } catch {
-      // error is handled via context
+      const response = await api.signup(form);
+      const token = response.token;
+      const user = response.user || response.userData || form;
+      
+      storeTokenInLS(token);
+      storeUserInLS(user);
+      navigate('/');
+    } catch (err) {
+      setError(err.message || 'Signup failed');
+    } finally {
+      setLoading(false);
     }
   };
 

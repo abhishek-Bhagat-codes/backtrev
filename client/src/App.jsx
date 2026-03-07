@@ -10,6 +10,7 @@ import RiskyZones from "./pages/RiskyZones";
 import AppLayout from "./components/layout/AppLayout";
 import { tourists as dummyTourists, alerts as dummyAlerts, zones as dummyZones } from "./data/dummyData";
 import api from "./services/api";
+import Signup from "./pages/Signup";
 
 const App = () => {
   const [tourists, setTourists] = useState(dummyTourists);
@@ -103,6 +104,7 @@ const App = () => {
             <Route path="riskyzones" element={<RiskyZones zones={zones} loading={loading} />} />
           </Route>
           <Route path="login" element={<Login />} />
+          <Route path="signup" element={<Signup />} />
         </Routes>
       </Router>
     </>

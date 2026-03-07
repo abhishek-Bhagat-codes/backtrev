@@ -17,11 +17,21 @@ async function request(path, options = {}) {
 export const api = {
   login: (email, password) => request('/users/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
   signup: (body) => request('/users/signup', { method: 'POST', body: JSON.stringify(body) }),
+  getProfile: () => request('/users/me'),
 
   // Dashboard (no auth required)
-  getTourists: () => request('/dashboard/tourists'),
-  getAlerts: () => request('/dashboard/alerts'),
-  getZones: () => request('/dashboard/zones'),
+  getTourists: async () => {
+    const response = await request('/dashboard/tourists');
+    return { tourists: response.data?.tourists || [] };
+  },
+  getAlerts: async () => {
+    const response = await request('/dashboard/alerts');
+    return { alerts: response.data?.alerts || [] };
+  },
+  getZones: async () => {
+    const response = await request('/dashboard/zones');
+    return { zones: response.data?.zones || [] };
+  },
 
   // Alert status update (SOS only)
   updateAlertStatus: (sosNotificationId, status) =>
