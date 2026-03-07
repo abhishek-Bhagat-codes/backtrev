@@ -9,6 +9,16 @@ async function request(path, options = {}) {
   };
   const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
   const data = await res.json().catch(() => ({}));
+
+  if (res.status === 401) {
+    // Token invalid or expired – force logout on client
+    localStorage.removeItem('token');
+    if (window.location.pathname !== '/login') {
+      window.location.href = '/login';
+    }
+    throw new Error(data.message || 'Unauthorized');
+  }
+
   if (!res.ok) throw new Error(data.message || 'Request failed');
   return data;
 }
