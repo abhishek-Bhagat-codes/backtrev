@@ -5,8 +5,7 @@ const { Schema } = mongoose;
  * EmergencyNotification (SOS) Schema
  */
 const EmergencyNotificationSchema = new Schema({
-  userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-  status: { type: String, enum:['active','acknowledged','dispatched'], default:'active' },
+  userId:         { type: Schema.Types.ObjectId, ref: 'User', required: true },
   currentLocation:{ type: String },
   latitude:       { type: Number },
   longitude:      { type: Number },
