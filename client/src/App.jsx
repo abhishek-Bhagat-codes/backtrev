@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Tourist from "./pages/Tourists";
 import Login from "./pages/Login";
+import Signup from "./pages/Signup";
 import TouristDetail from "./pages/TouristDetail";
 import Alerts from "./pages/Alerts";
 import Reports from "./pages/Reports";
@@ -10,6 +11,17 @@ import RiskyZones from "./pages/RiskyZones";
 import AppLayout from "./components/layout/AppLayout";
 import { tourists as dummyTourists, alerts as dummyAlerts, zones as dummyZones } from "./data/dummyData";
 import api from "./services/api";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+
+const PrivateRoute = ({ children }) => {
+  const { isAuthenticated } = useAuth();
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+};
 
 const App = () => {
   const [tourists, setTourists] = useState(dummyTourists);
@@ -68,10 +80,17 @@ const App = () => {
   };
 
   return (
-    <>
-      <Router>
+    <Router>
+      <AuthProvider>
         <Routes>
-          <Route path="/" element={<AppLayout />}>
+          <Route
+            path="/"
+            element={
+              <PrivateRoute>
+                <AppLayout />
+              </PrivateRoute>
+            }
+          >
             <Route
               index
               element={
@@ -102,10 +121,11 @@ const App = () => {
             <Route path="reports" element={<Reports />} />
             <Route path="riskyzones" element={<RiskyZones zones={zones} loading={loading} />} />
           </Route>
-          <Route path="login" element={<Login />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
         </Routes>
-      </Router>
-    </>
+      </AuthProvider>
+    </Router>
   );
 };
 
