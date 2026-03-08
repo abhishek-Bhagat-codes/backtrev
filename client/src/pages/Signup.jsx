@@ -1,16 +1,17 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/auth";
-import api from "../services/api";
+import { signup } from "../services/api";
+import { toast } from "react-toastify";
 
 const Signup = () => {
-  const { storeTokenInLS, storeUserInLS } = useAuth();
+  const { storeUserInLS } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [form, setForm] = useState({
     fullName: "",
-    email: "",
+    email: "",  
     phoneNumber: "",
     aadhaarNumber: "",
     password: "",
@@ -27,13 +28,12 @@ const Signup = () => {
     setError(null);
     setLoading(true);
     try {
-      const response = await api.signup(form);
-      const token = response.token;
+      const response = await signup(form);
       const user = response.user || response.userData || form;
-      
-      storeTokenInLS(token);
+
       storeUserInLS(user);
-      navigate('/');
+      navigate('/login');
+      toast.success("Registration Successful");
     } catch (err) {
       setError(err.message || 'Signup failed');
     } finally {

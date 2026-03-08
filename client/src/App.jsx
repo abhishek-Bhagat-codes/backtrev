@@ -9,7 +9,7 @@ import Reports from "./pages/Reports";
 import RiskyZones from "./pages/RiskyZones";
 import AppLayout from "./components/layout/AppLayout";
 import { tourists as dummyTourists, alerts as dummyAlerts, zones as dummyZones } from "./data/dummyData";
-import api from "./services/api";
+// import api from "./services/api";
 import Signup from "./pages/Signup";
 
 const App = () => {
@@ -20,53 +20,53 @@ const App = () => {
   const [error, setError] = useState(null);
   const [useDummy, setUseDummy] = useState(false);
 
-  const fetchData = useCallback(async () => {
-    if (useDummy) {
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    setError(null);
-    try {
-      const [touristsRes, alertsRes, zonesRes] = await Promise.all([
-        api.getTourists(),
-        api.getAlerts(),
-        api.getZones()
-      ]);
-      setTourists(touristsRes.tourists || []);
-      setAlerts(alertsRes.alerts || []);
-      setZones(zonesRes.zones || []);
-    } catch (err) {
-      setError(err.message || "Failed to load data");
-      setTourists(dummyTourists);
-      setAlerts(dummyAlerts);
-      setZones(dummyZones);
-    } finally {
-      setLoading(false);
-    }
-  }, [useDummy]);
+  // const fetchData = useCallback(async () => {
+  //   if (useDummy) {
+  //     setLoading(false);
+  //     return;
+  //   }
+  //   setLoading(true);
+  //   setError(null);
+  //   try {
+  //     const [touristsRes, alertsRes, zonesRes] = await Promise.all([
+  //       api.getTourists(),
+  //       api.getAlerts(),
+  //       api.getZones()
+  //     ]);
+  //     setTourists(touristsRes.tourists || []);
+  //     setAlerts(alertsRes.alerts || []);
+  //     setZones(zonesRes.zones || []);
+  //   } catch (err) {
+  //     setError(err.message || "Failed to load data");
+  //     setTourists(dummyTourists);
+  //     setAlerts(dummyAlerts);
+  //     setZones(dummyZones);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, [useDummy]);
 
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+  // useEffect(() => {
+  //   fetchData();
+  // }, [fetchData]);
 
-  const updateAlertStatus = async (alertId, newStatus) => {
-    const alert = alerts.find((a) => a.id === alertId);
-    if (alert?._type === "SOS" && alert?._backendId) {
-      try {
-        await api.updateAlertStatus(alert._backendId, newStatus);
-        setAlerts((prev) =>
-          prev.map((a) => (a.id === alertId ? { ...a, status: newStatus } : a))
-        );
-      } catch (err) {
-        console.error("Failed to update alert status:", err);
-      }
-    } else {
-      setAlerts((prev) =>
-        prev.map((a) => (a.id === alertId ? { ...a, status: newStatus } : a))
-      );
-    }
-  };
+  // const updateAlertStatus = async (alertId, newStatus) => {
+  //   const alert = alerts.find((a) => a.id === alertId);
+  //   if (alert?._type === "SOS" && alert?._backendId) {
+  //     try {
+  //       await api.updateAlertStatus(alert._backendId, newStatus);
+  //       setAlerts((prev) =>
+  //         prev.map((a) => (a.id === alertId ? { ...a, status: newStatus } : a))
+  //       );
+  //     } catch (err) {
+  //       console.error("Failed to update alert status:", err);
+  //     }
+  //   } else {
+  //     setAlerts((prev) =>
+  //       prev.map((a) => (a.id === alertId ? { ...a, status: newStatus } : a))
+  //     );
+  //   }
+  // };
 
   return (
     <>
@@ -80,10 +80,10 @@ const App = () => {
                   tourists={tourists}
                   alerts={alerts}
                   zones={zones}
-                  updateAlertStatus={updateAlertStatus}
+                  // updateAlertStatus={updateAlertStatus}
                   loading={loading}
                   error={error}
-                  onRetry={fetchData}
+                  // onRetry={fetchData}
                   useDummy={useDummy}
                   setUseDummy={setUseDummy}
                 />
@@ -97,7 +97,11 @@ const App = () => {
             <Route
               path="alerts"
               element={
-                <Alerts alerts={alerts} updateAlertStatus={updateAlertStatus} loading={loading} />
+                <Alerts 
+                  alerts={alerts} 
+                  // updateAlertStatus={updateAlertStatus} 
+                  loading={loading} 
+                />
               }
             />
             <Route path="reports" element={<Reports />} />
