@@ -2,7 +2,7 @@ import { Send, CircleCheck, User } from "lucide-react";
 
 const statusStyles = {
     active: "border-red-700 text-red-400",
-    acknowledged: "border-blue-700 text-blue-400",
+    acknowledged: "border-blue-700 text-blue-400",  
     dispatched: "border-green-700 text-green-400",
 };
 
