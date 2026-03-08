@@ -30,9 +30,25 @@ export const loginUser = (userData) =>
         body: JSON.stringify(userData),
     });
 
+// Dashboard (no auth required)
+export const getTourists = () => request('/dashboard/tourists');
+export const getAlerts = () => request('/dashboard/alerts');
+export const getZones = () => request('/dashboard/zones');
+
+// Alert status update (SOS only)
+export const updateAlertStatus = (sosNotificationId, status) =>
+    request(`/sos-notifications/${sosNotificationId}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status })
+    })
+
 const api = {
     signup,
     loginUser,
+    getTourists,
+    getAlerts,
+    getZones,
+    updateAlertStatus,
 };
 
 export default api;

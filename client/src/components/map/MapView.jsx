@@ -1,10 +1,24 @@
 import React from 'react';
+import { MapContainer, TileLayer, GeoJSON, LayersControl, LayerGroup, Marker, Popup} from 'react-leaflet'
+import 'leaflet/dist/leaflet.css';
+import { useState } from 'react';
 
 const MapView = () => {
+    const [center, setCenter] = useState([28.6448, 77.216721]);  
+    const mapRef = React.useRef();
+    
     return (
-        <div>
-            <img className='w-full h-full object-cover' src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8V09STEQlMjBNQVB8ZW58MHx8MHx8fDA%3D" alt="haryana image" />
-        </div>  
+        <MapContainer ref={mapRef} center={center} zoom={13} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
+            <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <Marker position={center}>
+                <Popup>
+                    A pretty CSS3 popup. <br /> Easily customizable.
+                </Popup>
+            </Marker>
+        </MapContainer>  
     );
 }
 
