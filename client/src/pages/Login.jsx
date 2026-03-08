@@ -1,27 +1,35 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import api from '../services/api';
+import { loginUser } from '../services/api';
+import { toast } from 'react-toastify';
 import { useAuth } from '../context/auth';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [user, setUser] = useState({
+      email: "",
+      password: "",
+  });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { storeTokenInLS, storeUserInLS } = useAuth();
+
+  const handleInputChange = (e) => {
+    setUser({ ...user, [e.target.name]: e.target.value });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
-      const response = await api.login(email, password);
+      const response = await loginUser(user);
       const token = response.token;
-      const user = response.user || response.userData || { email };
+      const loggedInUser = response.user || response.userData || { email: user.email };
       
       storeTokenInLS(token);
-      storeUserInLS(user);
+      storeUserInLS(loggedInUser);
+      toast.success("Login Successful");
       navigate('/');
     } catch (err) {
       setError(err.message || 'Login failed');
@@ -39,8 +47,9 @@ const Login = () => {
             <label className="block text-sm text-gray-400 mb-1">Email</label>
             <input
               type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={user.email}
+              onChange={handleInputChange}
+              name="email"
               required
               className="w-full px-4 py-2 rounded-md border border-gray-700 bg-gray-800 text-white focus:outline-none focus:border-blue-600"
               placeholder="admin@example.com"
@@ -50,8 +59,9 @@ const Login = () => {
             <label className="block text-sm text-gray-400 mb-1">Password</label>
             <input
               type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              value={user.password}
+              onChange={handleInputChange}
+              name="password"
               required
               className="w-full px-4 py-2 rounded-md border border-gray-700 bg-gray-800 text-white focus:outline-none focus:border-blue-600"
             />
