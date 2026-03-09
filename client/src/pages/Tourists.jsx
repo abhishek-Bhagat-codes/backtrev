@@ -20,7 +20,7 @@ const Tourists = ({tourists}) => {
 
     return (
         <>
-            <DashboardHeader />
+            <DashboardHeader page="Tourists" />
             <SearchFilterBar search={search} setSearch={setSearch} status={status} setStatus={setStatus}/>
             <TouristTable tourists={filteredTourists}/>
         </>

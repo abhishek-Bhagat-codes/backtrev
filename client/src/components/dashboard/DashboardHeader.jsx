@@ -2,7 +2,7 @@ import { Bell, LogOut } from "lucide-react";
 import { useAuth } from '../../context/auth';
 import { useState, useEffect} from 'react';
 
-const DashboardHeader = () => {
+const DashboardHeader = ({ page }) => {
     const { user, logout } = useAuth();
     const [open, setOpen] = useState(false);
 
@@ -15,7 +15,7 @@ const DashboardHeader = () => {
 
     return (
         <div className="flex items-center justify-between mb-6 pb-4 border-b border-gray-800">
-            <h1 className="text-xl font-semibold">Smart Tourist Safety - Dashboard</h1>
+            <h1 className="text-xl font-semibold">Smart Tourist Safety - {page}</h1>
             <div className="flex items-center gap-3">
                 <button className="p-2 rounded-md cursor-pointer hover:bg-green-700"><Bell size={18} /></button>
                 <div className="relative">
