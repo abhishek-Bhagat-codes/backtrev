@@ -18,7 +18,7 @@ const Alerts = ({alerts, updateAlertStatus}) => {
 
     return (
         <>
-            <DashboardHeader />
+            <DashboardHeader page="Alerts" />
             <div className="mt-4">
                 <AlertFilter status={status} setStatus={setStatus} />
             </div>
