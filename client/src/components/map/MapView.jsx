@@ -27,14 +27,14 @@ const MapView = ({ tourists = [] }) => {
     }, []);
 
     return (
-        <MapContainer ref={mapRef} center={center} zoom={13} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
+        <MapContainer ref={mapRef} center={center} zoom={12} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             
-            {/* Display markers for each tourist */}
-            {tourists.map((tourist) => (
+            {/* Display markers for tourists with warning or SOS status */}
+            {tourists.filter(tourist => tourist.status === 'warning' || tourist.status === 'sos').map((tourist) => (
                 <Marker 
                     key={tourist.id} 
                     position={[tourist.location.lat, tourist.location.lng]}
@@ -42,11 +42,11 @@ const MapView = ({ tourists = [] }) => {
                 >
                     <Popup>
                         <div className="min-w-48">
-                            <h3 className="text-base font-semibold text-gray-800 mb-1">{tourist.name}</h3>
-                            <p className="text-xs text-gray-600 mb-1">
+                            <h3 className="text-base font-semibold text-gray-800 ">{tourist.name}</h3>
+                            <p className="text-xs text-gray-600 ">
                                 <span className="font-semibold">ID:</span> {tourist.id}
                             </p>
-                            <p className="text-xs text-gray-600 mb-2">
+                            <p className="text-xs text-gray-600 ">
                                 <span className="font-semibold">Itinerary:</span> {tourist.itinerary}
                             </p>
                             <span className={`inline-block px-2 py-0.5 text-xs rounded text-white ${tourist.status === "safe" ? "bg-green-500" : tourist.status === "warning" ? "bg-yellow-500" : "bg-red-500" }`}>
