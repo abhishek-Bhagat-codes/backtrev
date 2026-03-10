@@ -33,11 +33,20 @@ const Reports = () => {
         (acc, alert) => {
             if (alert.type === "SOS") acc.SOS += 1;
             else if (alert.type === "Geo-fence") acc["Geo-fence"] += 1;
-            else if (alert.type === "Anomaly") acc.Anomaly += 1;
             return acc;
         },
-        { SOS: 0, "Geo-fence": 0, Anomaly: 0 }
+        { SOS: 0, "Geo-fence": 0 }
     );
+
+    const alertsByDateMap = alerts.reduce((acc, alert) => {
+        const dateKey = (alert.time || "").split(",")[0]?.trim();
+        if (!dateKey) return acc;
+        acc[dateKey] = (acc[dateKey] || 0) + 1;
+        return acc;
+    }, {});
+
+    const alertDateLabels = Object.keys(alertsByDateMap); // Extract unique dates for x-axis labels
+    const alertsPerDay = alertDateLabels.map((date) => alertsByDateMap[date]); // Get alert counts corresponding to each date label
 
     return (
         <div className="space-y-4">
@@ -110,8 +119,53 @@ const Reports = () => {
                 </div>
 
                 <div className="h-85 rounded-xl border border-gray-700 bg-gray-900/60 p-4">
-                    <h3 className="text-sm font-semibold text-gray-200 mb-3">Risk Zone Comparison</h3>
-                    
+                    <h3 className="text-sm font-semibold text-gray-200 mb-3">Alerts per day</h3>
+                    <Line 
+                        data={{
+                            labels: alertDateLabels,
+                            datasets: [
+                                {
+                                    label: "Number of Alerts",
+                                    data: alertsPerDay,
+                                    borderColor: 'rgb(59, 130, 246)',
+                                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
+                                    tension: 0.3,
+                                    fill: true,
+                                },
+                            ],
+                        }}
+                        options={{
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    labels: {
+                                        color: 'rgb(209, 213, 219)',
+                                    }
+                                }
+                            },
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        color: 'rgb(156, 163, 175)',
+                                        stepSize: 1,
+                                    },
+                                    grid: {
+                                        color: 'rgba(75, 85, 99, 0.3)',
+                                    }
+                                },
+                                x: {
+                                    ticks: {
+                                        color: 'rgb(156, 163, 175)',
+                                    },
+                                    grid: {
+                                        color: 'rgba(75, 85, 99, 0.3)',
+                                    }
+                                }
+                            }
+                        }}
+                    />
                 </div>
 
                 <div className="h-85 rounded-xl border border-gray-700 bg-gray-900/60 p-4">
@@ -125,7 +179,6 @@ const Reports = () => {
                                     data: [
                                         alertTypeCounts.SOS,
                                         alertTypeCounts["Geo-fence"],
-                                        alertTypeCounts.Anomaly,
                                     ],
                                     backgroundColor: [
                                         'rgba(239, 68, 68, 0.8)',
