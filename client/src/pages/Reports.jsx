@@ -53,10 +53,11 @@ const Reports = () => {
             <DashboardHeader page="Reports" />
 
             <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="h-85 rounded-xl border border-gray-700 bg-gray-900/60 p-4">
+                <div className="h-[23rem] rounded-xl border border-gray-700 bg-gray-900/60 p-4 overflow-hidden">
                     <h3 className="text-sm font-semibold text-gray-200 mb-3">Tourist Activity Trend</h3>
-                    <Bar 
-                        data={{
+                    <div className="h-[calc(100%-1.75rem)]">
+                        <Bar 
+                            data={{
                             labels: ["West", "South", "North", "Central"],
                             datasets: [
                                 {
@@ -84,7 +85,7 @@ const Reports = () => {
                                 },
                             ],
                         }}
-                        options={{
+                            options={{
                             responsive: true,
                             maintainAspectRatio: false,
                             plugins: {
@@ -114,14 +115,16 @@ const Reports = () => {
                                     }
                                 }
                             }
-                        }}
-                    />
+                            }}
+                        />
+                    </div>
                 </div>
 
-                <div className="h-85 rounded-xl border border-gray-700 bg-gray-900/60 p-4">
+                <div className="h-[23rem] rounded-xl border border-gray-700 bg-gray-900/60 p-4 overflow-hidden">
                     <h3 className="text-sm font-semibold text-gray-200 mb-3">Alerts per day</h3>
-                    <Line 
-                        data={{
+                    <div className="h-[calc(100%-1.75rem)]">
+                        <Line 
+                            data={{
                             labels: alertDateLabels,
                             datasets: [
                                 {
@@ -134,7 +137,7 @@ const Reports = () => {
                                 },
                             ],
                         }}
-                        options={{
+                            options={{
                             responsive: true,
                             maintainAspectRatio: false,
                             plugins: {
@@ -164,14 +167,16 @@ const Reports = () => {
                                     }
                                 }
                             }
-                        }}
-                    />
+                            }}
+                        />
+                    </div>
                 </div>
 
-                <div className="h-85 rounded-xl border border-gray-700 bg-gray-900/60 p-4">
+                <div className="h-[23rem] rounded-xl border border-gray-700 bg-gray-900/60 p-4 overflow-hidden">
                     <h3 className="text-sm font-semibold text-gray-200 mb-3">Alert Type Distribution</h3>
-                    <Doughnut 
-                        data={{
+                    <div className="h-[calc(100%-1.75rem)]">
+                        <Doughnut 
+                            data={{
                             labels: ["SOS", "Geo-fence"],
                             datasets: [
                                 {
@@ -194,7 +199,7 @@ const Reports = () => {
                                 },
                             ],
                         }}
-                        options={{
+                            options={{
                             responsive: true,
                             maintainAspectRatio: false,
                             plugins: {
@@ -204,11 +209,12 @@ const Reports = () => {
                                     }
                                 }
                             },
-                        }}
-                    />
+                            }}
+                        />
+                    </div>
                 </div>
 
-                <div className="h-85 rounded-xl border border-gray-700 bg-gray-900/60 p-4">
+                <div className="h-[23rem] rounded-xl border border-gray-700 bg-gray-900/60 p-4 overflow-hidden">
                     <h3 className="text-sm font-semibold text-gray-200 mb-3">Safety Score Summary</h3>
                     
                 </div>
