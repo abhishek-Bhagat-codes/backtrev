@@ -2,7 +2,7 @@ import React from 'react';
 import DashboardHeader from '../components/dashboard/DashboardHeader';
 import { Chart as ChartJS } from 'chart.js/auto';
 import { Line, Bar, Doughnut } from "react-chartjs-2";
-import { tourists } from '../data/dummyData';
+import { tourists, alerts } from '../data/dummyData';
 
 const Reports = () => {
     // Categorize tourists by region based on lat/lng
@@ -28,6 +28,16 @@ const Reports = () => {
     };
 
     const regionData = categorizeByRegion();
+
+    const alertTypeCounts = alerts.reduce(
+        (acc, alert) => {
+            if (alert.type === "SOS") acc.SOS += 1;
+            else if (alert.type === "Geo-fence") acc["Geo-fence"] += 1;
+            else if (alert.type === "Anomaly") acc.Anomaly += 1;
+            return acc;
+        },
+        { SOS: 0, "Geo-fence": 0, Anomaly: 0 }
+    );
 
     return (
         <div className="space-y-4">
@@ -100,13 +110,49 @@ const Reports = () => {
                 </div>
 
                 <div className="h-85 rounded-xl border border-gray-700 bg-gray-900/60 p-4">
-                    <h3 className="text-sm font-semibold text-gray-200 mb-3">Alert Type Distribution</h3>
+                    <h3 className="text-sm font-semibold text-gray-200 mb-3">Risk Zone Comparison</h3>
                     
                 </div>
 
                 <div className="h-85 rounded-xl border border-gray-700 bg-gray-900/60 p-4">
-                    <h3 className="text-sm font-semibold text-gray-200 mb-3">Risk Zone Comparison</h3>
-                    
+                    <h3 className="text-sm font-semibold text-gray-200 mb-3">Alert Type Distribution</h3>
+                    <Doughnut 
+                        data={{
+                            labels: ["SOS", "Geo-fence"],
+                            datasets: [
+                                {
+                                    label: "Number of Alerts",
+                                    data: [
+                                        alertTypeCounts.SOS,
+                                        alertTypeCounts["Geo-fence"],
+                                        alertTypeCounts.Anomaly,
+                                    ],
+                                    backgroundColor: [
+                                        'rgba(239, 68, 68, 0.8)',
+                                        'rgba(59, 130, 246, 0.8)',
+                                        'rgba(245, 158, 11, 0.8)',
+                                    ],
+                                    borderColor: [
+                                        'rgb(239, 68, 68)',
+                                        'rgb(59, 130, 246)',
+                                        'rgb(245, 158, 11)',
+                                    ],
+                                    borderWidth: 1,
+                                },
+                            ],
+                        }}
+                        options={{
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: {
+                                legend: {
+                                    labels: {
+                                        color: 'rgb(209, 213, 219)',
+                                    }
+                                }
+                            },
+                        }}
+                    />
                 </div>
 
                 <div className="h-85 rounded-xl border border-gray-700 bg-gray-900/60 p-4">
