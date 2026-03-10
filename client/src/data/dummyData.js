@@ -197,6 +197,19 @@ export const tourists = [
         emergencyContact: "+91 98XXXXXX08",
         location: { lat: 28.6280, lng: 77.2090 },
     },
+    {
+        id: "T-1016",
+        name: "Dev Malhotra",
+        itinerary: "Punjabi Bagh → Rajouri Garden",
+        status: "safe",
+        active: true,
+        gender: "male",
+        lastSeen: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
+        photoUrl: "",
+        emergencyContacts: [{ name: "Friend", phone: "+91 97XXXXXX11" }],
+        emergencyContact: "+91 97XXXXXX11",
+        location: { lat: 28.6040, lng: 77.1450 },
+    },
 ]; 
 
 export const alerts = [
