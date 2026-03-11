@@ -104,7 +104,7 @@ const App = () => {
                 />
               }
             />
-            <Route path="reports" element={<Reports />} />
+            <Route path="reports" element={<Reports zones={zones}/>} />
             <Route path="riskyzones" element={<RiskyZones zones={zones} loading={loading} />} />
           </Route>
           <Route path="login" element={<Login />} />
