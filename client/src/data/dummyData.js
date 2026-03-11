@@ -420,4 +420,34 @@ export const zones = [
         risk: "High",
         location: { lat: 28.6315, lng: 77.2167 },
     },
+    {
+        id: "Z-2",
+        name: "Chandni Chowk",
+        risk: "High",
+        location: { lat: 28.6562, lng: 77.2410 },
+    },
+    {
+        id: "Z-3",
+        name: "Karol Bagh",
+        risk: "Medium",
+        location: { lat: 28.6517, lng: 77.1907 },
+    },
+    {
+        id: "Z-4",
+        name: "Hauz Khas",
+        risk: "Medium",
+        location: { lat: 28.5494, lng: 77.2001 },
+    },
+    {
+        id: "Z-5",
+        name: "Nehru Place",
+        risk: "Low",
+        location: { lat: 28.5495, lng: 77.2510 },
+    },
+    {
+        id: "Z-6",
+        name: "Dwarka Sector 21",
+        risk: "Low",
+        location: { lat: 28.5562, lng: 77.1000 },
+    },
 ];
