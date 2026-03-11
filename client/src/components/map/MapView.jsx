@@ -1,12 +1,12 @@
 import React from 'react';
-import { MapContainer, TileLayer, Marker, Popup} from 'react-leaflet'
+import { MapContainer, TileLayer, Marker, Popup, Circle} from 'react-leaflet'
 import 'leaflet/dist/leaflet.css';
 import { useMemo, useState } from 'react';
 import { User } from "lucide-react";
 import L from 'leaflet';
 import { renderToStaticMarkup } from 'react-dom/server';
 
-const MapView = ({ tourists = [] }) => {
+const MapView = ({ tourists = [], zones = [] }) => {
     const [center] = useState([28.6448, 77.216721]);  
     const mapRef = React.useRef();
 
@@ -55,6 +55,25 @@ const MapView = ({ tourists = [] }) => {
                         </div>
                     </Popup>
                 </Marker>
+            ))}
+
+            // Display markers for zones
+            {zones.map((zone) => (
+                <Circle
+                    key={zone.id}
+                    center={[zone.location.lat, zone.location.lng]} 
+                    radius={zone.radius || 800}
+                    pathOptions={{ color: 'red', fillColor: 'rgba(255,0,0,0.3)', fillOpacity: 0.5 }}
+                >
+                    <Popup>
+                        <div className="min-w-48">
+                            <h3 className="text-base font-semibold text-gray-800 ">{zone.name}</h3>
+                            <p className="text-xs text-gray-600 ">
+                                <span className="font-semibold">ID:</span> {zone.id}
+                            </p>
+                        </div>
+                    </Popup>
+                </Circle>
             ))}
         </MapContainer>  
     );
