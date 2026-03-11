@@ -3,8 +3,9 @@ import DashboardHeader from '../components/dashboard/DashboardHeader';
 import { Chart as ChartJS } from 'chart.js/auto';
 import { Line, Bar, Doughnut } from "react-chartjs-2";
 import { tourists, alerts } from '../data/dummyData';
+import MapView from '../components/map/MapView';
 
-const Reports = () => {
+const Reports = ({ zones }) => {
     // Categorize tourists by region based on lat/lng
     const categorizeByRegion = () => {
         const regions = { West: 0, South: 0, North: 0, Central: 0 };
@@ -53,7 +54,7 @@ const Reports = () => {
             <DashboardHeader page="Reports" />
 
             <section className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="h-[23rem] rounded-xl border border-gray-700 bg-gray-900/60 p-4 overflow-hidden">
+                <div className="h-92 rounded-xl border border-gray-700 bg-gray-900/60 p-4 overflow-hidden">
                     <h3 className="text-sm font-semibold text-gray-200 mb-3">Tourist Activity Trend</h3>
                     <div className="h-[calc(100%-1.75rem)]">
                         <Bar 
@@ -120,7 +121,7 @@ const Reports = () => {
                     </div>
                 </div>
 
-                <div className="h-[23rem] rounded-xl border border-gray-700 bg-gray-900/60 p-4 overflow-hidden">
+                <div className="h-92 rounded-xl border border-gray-700 bg-gray-900/60 p-4 overflow-hidden">
                     <h3 className="text-sm font-semibold text-gray-200 mb-3">Alerts per day</h3>
                     <div className="h-[calc(100%-1.75rem)]">
                         <Line 
@@ -172,7 +173,7 @@ const Reports = () => {
                     </div>
                 </div>
 
-                <div className="h-[23rem] rounded-xl border border-gray-700 bg-gray-900/60 p-4 overflow-hidden">
+                <div className="h-92 rounded-xl border border-gray-700 bg-gray-900/60 p-4 overflow-hidden">
                     <h3 className="text-sm font-semibold text-gray-200 mb-3">Alert Type Distribution</h3>
                     <div className="h-[calc(100%-1.75rem)]">
                         <Doughnut 
@@ -214,9 +215,9 @@ const Reports = () => {
                     </div>
                 </div>
 
-                <div className="h-[23rem] rounded-xl border border-gray-700 bg-gray-900/60 p-4 overflow-hidden">
+                <div className="h-92 rounded-xl border border-gray-700 bg-gray-900/60 p-4 overflow-hidden">
                     <h3 className="text-sm font-semibold text-gray-200 mb-3">Safety Score Summary</h3>
-                    
+                        <MapView zones={zones} />
                 </div>
             </section>
         </div>
