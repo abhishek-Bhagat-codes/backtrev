@@ -10,9 +10,14 @@ const ActiveAlertsPanel = ({ alerts, updateAlertStatus}) => {
                 <h2 className="text-sm font-semibold text-white">Active Alerts</h2>
             </div>
 
-            <div className="space-y-3">{alerts.map(a => (<AlertItem key={a.id} alert={a} updateAlertStatus={updateAlertStatus}/>))}</div>
+            <div className="max-h-130 overflow-y-auto pr-1 space-y-3 scrollbar-none [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                {alerts.map((a) => (
+                    <AlertItem key={a.id} alert={a} updateAlertStatus={updateAlertStatus} />
+                ))}
+            </div>
         </div>
     );
 };
 
 export default ActiveAlertsPanel;
+    
