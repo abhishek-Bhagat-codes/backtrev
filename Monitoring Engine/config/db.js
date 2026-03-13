@@ -68,6 +68,19 @@ db.serialize(() => {
       FOREIGN KEY (trip_id) REFERENCES user_trips(trip_id)
     )`
   );
+
+  // 5. Safety Scores History
+  db.run(
+    `CREATE TABLE IF NOT EXISTS safety_scores (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id TEXT NOT NULL,
+      trip_id INTEGER,
+      score INTEGER NOT NULL,
+      level TEXT NOT NULL,
+      timestamp TEXT DEFAULT CURRENT_TIMESTAMP,
+      FOREIGN KEY (trip_id) REFERENCES user_trips(trip_id)
+    )`
+  );
 });
 
 module.exports = db;

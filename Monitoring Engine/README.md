@@ -128,7 +128,10 @@ Response:
   "deviation": false,
   "zones": [
     { "zone": "Old Delhi Crowded Market", "status": "INSIDE", "distance": 84.3 }
-  ]
+  ],
+  "anomaly": { "score": 0.35, "is_anomaly": false },
+  "safety_score": 92,
+  "safety_level": "SAFE"
 }
 ```
 
@@ -177,5 +180,57 @@ Returns zones as objects with:
 - Poll `/location` every 5–10 seconds during an active trip.
 - Use `zones` in the `/location` response to drive safety UI (warnings, colors, alerts).
 - Admin/dashboard can manage risk zones using `/zones` (POST/GET) and visualize them on a map using `center` + `radius`.
+
+---
+
+## Anomaly Detection (Optional)
+
+An ML-based anomaly detection model can improve safety scoring. The model uses lat, lng, speed to detect abnormal movement.
+
+### Python Anomaly Service
+
+1. Install dependencies:
+   ```bash
+   cd anomaly_detaction_System
+   pip install -r requirements.txt
+   ```
+
+2. Start the service:
+   ```bash
+   uvicorn main:app --host 0.0.0.0 --port 8000
+   ```
+
+3. Set the URL (optional, default `http://localhost:8000`):
+   ```bash
+   ANOMALY_SERVICE_URL=http://localhost:8000 npm start
+   ```
+
+If the Python service is unavailable, the Node backend falls back to rule-based heuristics.
+
+### Predict Anomaly API
+
+**POST** `/predictAnomaly`
+
+Request:
+
+```json
+{
+  "user_id": "user-123",
+  "trip_id": 1,
+  "lat": 28.615,
+  "lng": 77.2105,
+  "speed": 12.5,
+  "timestamp": "2026-03-11T12:34:56Z"
+}
+```
+
+Response:
+
+```json
+{
+  "anomaly_score": 0.82,
+  "is_anomaly": true
+}
+```
 
 

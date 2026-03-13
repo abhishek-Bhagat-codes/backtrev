@@ -19,23 +19,26 @@ function haversine(lat1, lon1, lat2, lon2) {
   return R * c;
 }
 
-function isDeviated(user, route, threshold=200){
-
-  for (let point of route){
-
-    const dist = haversine(
-      user.lat,
-      user.lng,
-      point[1],
-      point[0]
-    );
-
-    if (dist < threshold){
-      return false;
-    }
+function isDeviated(user, route, threshold = 200) {
+  for (let point of route) {
+    const dist = haversine(user.lat, user.lng, point[1], point[0]);
+    if (dist < threshold) return false;
   }
-
   return true;
 }
 
-module.exports = { isDeviated };
+/**
+ * Returns minimum distance (meters) from user to any point on the route.
+ * Route format: [[lng, lat], ...]
+ */
+function getDistanceFromRoute(user, route) {
+  if (!route || route.length === 0) return null;
+  let minDist = Infinity;
+  for (let point of route) {
+    const dist = haversine(user.lat, user.lng, point[1], point[0]);
+    if (dist < minDist) minDist = dist;
+  }
+  return minDist;
+}
+
+module.exports = { isDeviated, getDistanceFromRoute };

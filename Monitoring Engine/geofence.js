@@ -55,13 +55,15 @@ async function checkZones(user) {
       alerts.push({
         zone: zone.name,
         status: "INSIDE",
-        distance
+        distance,
+        risk_level: zone.risk_level ?? 0
       });
     } else if (distance <= zone.radius + 100) {
       alerts.push({
         zone: zone.name,
         status: "APPROACHING",
-        distance
+        distance,
+        risk_level: zone.risk_level ?? 0
       });
     }
   });
