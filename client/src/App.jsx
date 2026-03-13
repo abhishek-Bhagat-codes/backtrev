@@ -29,19 +29,22 @@ const App = () => {
     setLoading(true);
     setError(null);
     try {
-      const [touristsRes, alertsRes, zonesRes] = await Promise.all([
-        getTourists(),
-        getAlerts(),
-        getZones()
-      ]);
-      setTourists(touristsRes.tourists || []);
-      setAlerts(alertsRes.alerts || []);
-      setZones(Array.isArray(zonesRes) ? zonesRes : (zonesRes?.zones || []));
+      // Fetch zones from http://10.0.82.200:3000/zones (via /ms/zones proxy)
+      const zonesRes = await getZones();
+      const zonesData = Array.isArray(zonesRes) ? zonesRes : (zonesRes?.zones || zonesRes?.data?.zones || []);
+      setZones(zonesData);
+    } catch (err) {
+      console.warn("Zones fetch failed, using dummy:", err.message);
+      setZones(dummyZones);
+    }
+    try {
+      const [touristsRes, alertsRes] = await Promise.all([getTourists(), getAlerts()]);
+      setTourists(touristsRes?.tourists || touristsRes?.data?.tourists || []);
+      setAlerts(alertsRes?.alerts || alertsRes?.data?.alerts || []);
     } catch (err) {
       setError(err.message || "Failed to load data");
       setTourists(dummyTourists);
       setAlerts(dummyAlerts);
-      setZones(dummyZones);
     } finally {
       setLoading(false);
     }

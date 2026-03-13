@@ -54,11 +54,20 @@ export const getTourists = () => request1('/dashboard/tourists');
 export const getAlerts = () => request1('/alerts');
 export const getZones = () => request1('/zones');
 
-// Risk Zone Management
+// Risk Zone Management - saves to Monitoring Engine (http://10.0.82.200:3000/zones)
 export const createZone = (zone) =>
     request1('/zones', {
         method: 'POST',
-        body: JSON.stringify(zone),
+        body: JSON.stringify({
+            name: zone.name,
+            latitude: zone.latitude,
+            longitude: zone.longitude,
+            radius: zone.radius || 300,
+            type: zone.type || 'crime zone',
+            expiry_type: 'infinite',
+            expiry_time: null,
+            risk_level: Number(zone.risk_level) || 4,
+        }),
     });
 
 // Alert status update (SOS only)
