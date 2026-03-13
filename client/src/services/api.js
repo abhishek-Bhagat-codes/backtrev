@@ -1,6 +1,13 @@
 const API_BASE = "/api";
 const MS_BASE = "/ms";
 
+const mapSosStatusToUi = (status) => {
+    if (status === "pending") return "active";
+    if (status === "acknowledged") return "acknowledged";
+    if (status === "resolved") return "dispatched";
+    return "active";
+};
+
 async function request(path, options = {}) {
     const token = localStorage.getItem("token");
     const headers = {
@@ -51,7 +58,62 @@ export const loginUser = (userData) =>
 
 // Dashboard (no auth required)
 export const getTourists = () => request1('/dashboard/tourists');
-export const getAlerts = () => request1('/alerts');
+export const getAlerts = async () => {
+    const response = await request('/sos-notifications/all');
+    const sosNotifications = response?.sosNotifications || response?.alerts || response?.data?.alerts || [];
+    const alerts = [];
+
+    if (Array.isArray(sosNotifications)) {
+        const userCodeMap = new Map();
+        const userAlertCountMap = new Map();
+        let nextTouristNumber = 1001;
+
+        sosNotifications.forEach((item) => {
+            const userId = String(item.userId?._id || item.userId || 'UNKNOWN');
+
+            if (!userCodeMap.has(userId)) {
+                userCodeMap.set(userId, `T-${nextTouristNumber}`);
+                nextTouristNumber += 1;
+            }
+
+            const touristCode = userCodeMap.get(userId);
+            const nextAlertCount = (userAlertCountMap.get(userId) || 0) + 1;
+            userAlertCountMap.set(userId, nextAlertCount);
+
+            alerts.push({
+                id: `A-${touristCode}-${nextAlertCount}`,
+                displayId: `A-${touristCode}-${nextAlertCount}`,
+                touristCode,
+                _backendId: item._id,
+                _type: 'SOS',
+                name: item.fullName || item.userId?.fullName || 'Unknown',
+                type: item.message || 'SOS',
+                status: mapSosStatusToUi(item.status),
+                touristId: userId,
+                time: item.createdAt ? new Date(item.createdAt).toLocaleString() : '',
+                location: item.currentLocation || '',
+                latitude: item.latitude,
+                longitude: item.longitude,
+            });
+        });
+    }
+
+    console.group('SOS Alerts Debug');
+    console.log('Endpoint:', '/api/sos-notifications/all');
+    console.log('Raw response:', response);
+    console.log('Raw sosNotifications:', sosNotifications);
+    console.log('Parsed alerts:', alerts);
+    console.log('Alert count:', Array.isArray(alerts) ? alerts.length : 'not-an-array');
+    console.groupEnd(); 
+
+    return {
+        alerts,
+        sosNotifications,
+        total: response?.total ?? alerts.length,
+        returned: response?.returned ?? alerts.length,
+        limit: response?.limit,
+    };
+};
 export const getZones = () => request1('/zones');
 
 // Risk Zone Management - saves to Monitoring Engine (http://10.0.82.200:3000/zones)
@@ -72,7 +134,7 @@ export const createZone = (zone) =>
 
 // Alert status update (SOS only)
 export const updateAlertStatus = (sosNotificationId, status) =>
-    request1(`/sos-notifications/${sosNotificationId}/status`, {
+    request(`/sos-notifications/${sosNotificationId}/status`, {
         method: 'PATCH',
         body: JSON.stringify({ status })
     })

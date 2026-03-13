@@ -9,7 +9,7 @@ import Reports from "./pages/Reports";
 import RiskyZones from "./pages/RiskyZones";
 import AppLayout from "./components/layout/AppLayout";
 import { tourists as dummyTourists, alerts as dummyAlerts, zones as dummyZones } from "./data/dummyData";
-import { getTourists, getAlerts, getZones, updateAlertStatus } from "./services/api";
+import { getTourists, getAlerts, getZones, updateAlertStatus as updateAlertStatusApi } from "./services/api";
 import Signup from "./pages/Signup";
 
 const App = () => {
@@ -54,11 +54,26 @@ const App = () => {
     fetchData();
   }, [fetchData]);
 
-  const updateAlertStatus = async (alertId, newStatus) => {
+  useEffect(() => {
+    if (useDummy) return;
+
+    const intervalId = setInterval(async () => {
+      try {
+        const alertsRes = await getAlerts();
+        setAlerts(alertsRes?.alerts || alertsRes?.data?.alerts || []);
+      } catch (err) {
+        console.warn("Auto refresh for alerts failed:", err.message);
+      }
+    }, 3000);
+
+    return () => clearInterval(intervalId);
+  }, [useDummy]);
+
+  const handleUpdateAlertStatus = async (alertId, newStatus) => {
     const alert = alerts.find((a) => a.id === alertId);
     if (alert?._type === "SOS" && alert?._backendId) {
       try {
-        await updateAlertStatus(alert._backendId, newStatus);
+        await updateAlertStatusApi(alert._backendId, newStatus);
         setAlerts((prev) =>
           prev.map((a) => (a.id === alertId ? { ...a, status: newStatus } : a))
         );
@@ -84,7 +99,7 @@ const App = () => {
                   tourists={tourists}
                   alerts={alerts}
                   zones={zones}
-                  // updateAlertStatus={updateAlertStatus}
+                  updateAlertStatus={handleUpdateAlertStatus}
                   loading={loading}
                   error={error}
                   // onRetry={fetchData}
@@ -103,7 +118,7 @@ const App = () => {
               element={
                 <Alerts 
                   alerts={alerts} 
-                  // updateAlertStatus={updateAlertStatus} 
+                  updateAlertStatus={handleUpdateAlertStatus} 
                   loading={loading} 
                 />
               }
