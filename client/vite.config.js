@@ -13,7 +13,8 @@ export default defineConfig({
       },
       '/ms': {
         target: 'http://10.0.82.200:3000',
-        changeOrigin: true
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/ms/, ''),
       },
     },
   },

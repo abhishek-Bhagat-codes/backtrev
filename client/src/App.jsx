@@ -9,7 +9,7 @@ import Reports from "./pages/Reports";
 import RiskyZones from "./pages/RiskyZones";
 import AppLayout from "./components/layout/AppLayout";
 import { tourists as dummyTourists, alerts as dummyAlerts, zones as dummyZones } from "./data/dummyData";
-import {getTourists, getAlerts, getZones, updateAlertStatus} from "./services/api";
+import { getTourists, getAlerts, getZones, updateAlertStatus } from "./services/api";
 import Signup from "./pages/Signup";
 
 const App = () => {
@@ -36,7 +36,7 @@ const App = () => {
       ]);
       setTourists(touristsRes.tourists || []);
       setAlerts(alertsRes.alerts || []);
-      setZones(zonesRes.zones || []);
+      setZones(Array.isArray(zonesRes) ? zonesRes : (zonesRes?.zones || []));
     } catch (err) {
       setError(err.message || "Failed to load data");
       setTourists(dummyTourists);
@@ -106,7 +106,7 @@ const App = () => {
               }
             />
             <Route path="reports" element={<Reports zones={zones}/>} />
-            <Route path="riskyzones" element={<RiskyZones zones={zones} loading={loading} />} />
+            <Route path="riskyzones" element={<RiskyZones zones={zones} loading={loading} onRefresh={fetchData} />} />
           </Route>
           <Route path="login" element={<Login />} />
           <Route path="signup" element={<Signup />} />

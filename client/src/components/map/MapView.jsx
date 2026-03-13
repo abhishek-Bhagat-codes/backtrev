@@ -6,6 +6,20 @@ import { User } from "lucide-react";
 import L from 'leaflet';
 import { renderToStaticMarkup } from 'react-dom/server';
 
+// Normalize zone to { lat, lng, radius } - supports API format (center: [lng, lat]) or legacy (location: { lat, lng })
+function getZoneCoords(zone) {
+    if (zone.center && Array.isArray(zone.center)) {
+        const [lng, lat] = zone.center;
+        return { lat, lng, radius: zone.radius ?? 800 };
+    }
+    if (zone.location) {
+        return { lat: zone.location.lat, lng: zone.location.lng, radius: zone.radius ?? 800 };
+    }
+    return null;
+}
+
+const RISK_COLORS = { 1: '#10b981', 2: '#f59e0b', 3: '#f59e0b', 4: '#ef4444', 5: '#ef4444' };
+
 const MapView = ({ tourists = [], zones = [] }) => {
     const [center] = useState([28.6448, 77.216721]);  
     const mapRef = React.useRef();
@@ -57,24 +71,33 @@ const MapView = ({ tourists = [], zones = [] }) => {
                 </Marker>
             ))}
 
-            // Display markers for zones
-            {zones.map((zone) => (
-                <Circle
-                    key={zone.id}
-                    center={[zone.location.lat, zone.location.lng]} 
-                    radius={zone.radius || 800}
-                    pathOptions={{ color: 'red', fillColor: 'rgba(255,0,0,0.3)', fillOpacity: 0.5 }}
-                >
-                    <Popup>
-                        <div className="min-w-48">
-                            <h3 className="text-base font-semibold text-gray-800 ">{zone.name}</h3>
-                            <p className="text-xs text-gray-600 ">
-                                <span className="font-semibold">ID:</span> {zone.id}
-                            </p>
-                        </div>
-                    </Popup>
-                </Circle>
-            ))}
+            {/* Display zones as circles - supports API format (center: [lng,lat]) or legacy (location) */}
+            {zones.map((zone) => {
+                const coords = getZoneCoords(zone);
+                if (!coords) return null;
+                const riskLevel = zone.risk_level ?? (zone.risk === "High" ? 4 : zone.risk === "Medium" ? 3 : 2) ?? 4;
+                const color = RISK_COLORS[riskLevel] || '#ef4444';
+                return (
+                    <Circle
+                        key={zone.id}
+                        center={[coords.lat, coords.lng]}
+                        radius={coords.radius}
+                        pathOptions={{ color, fillColor: color, fillOpacity: 0.35 }}
+                    >
+                        <Popup>
+                            <div className="min-w-48">
+                                <h3 className="text-base font-semibold text-gray-800">{zone.name}</h3>
+                                <p className="text-xs text-gray-600">
+                                    <span className="font-semibold">Type:</span> {zone.type || 'risk zone'}
+                                </p>
+                                <p className="text-xs text-gray-600">
+                                    <span className="font-semibold">Risk Level:</span> {riskLevel}
+                                </p>
+                            </div>
+                        </Popup>
+                    </Circle>
+                );
+            })}
         </MapContainer>  
     );
 }

@@ -52,7 +52,14 @@ export const loginUser = (userData) =>
 // Dashboard (no auth required)
 export const getTourists = () => request1('/dashboard/tourists');
 export const getAlerts = () => request1('/alerts');
-export const getZones = () =>request1('/zones')
+export const getZones = () => request1('/zones');
+
+// Risk Zone Management
+export const createZone = (zone) =>
+    request1('/zones', {
+        method: 'POST',
+        body: JSON.stringify(zone),
+    });
 
 // Alert status update (SOS only)
 export const updateAlertStatus = (sosNotificationId, status) =>
@@ -67,6 +74,7 @@ const api = {
     getTourists,
     getAlerts,
     getZones,
+    createZone,
     updateAlertStatus,
 };
 
