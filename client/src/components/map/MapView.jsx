@@ -1,10 +1,81 @@
 import React from 'react';
+import { MapContainer, TileLayer, Marker, Popup, Circle} from 'react-leaflet'
+import 'leaflet/dist/leaflet.css';
+import { useMemo, useState } from 'react';
+import { User } from "lucide-react";
+import L from 'leaflet';
+import { renderToStaticMarkup } from 'react-dom/server';
 
-const MapView = () => {
+const MapView = ({ tourists = [], zones = [] }) => {
+    const [center] = useState([28.6448, 77.216721]);  
+    const mapRef = React.useRef();
+
+    const touristMarkerIcon = useMemo(() => {
+        const markerHtml = renderToStaticMarkup(
+            <div className="w-7 h-7 flex items-center justify-center rounded-full bg-gray-700">
+                <User size={20} className="text-gray-300" />
+            </div>
+        );
+
+        return L.divIcon({
+            html: markerHtml,
+            className: '',
+            iconSize: [28, 28],
+            iconAnchor: [14, 14],
+            popupAnchor: [0, -14],
+        });
+    }, []);
+
     return (
-        <div>
-            <img className='w-full h-full object-cover' src="https://images.unsplash.com/photo-1524661135-423995f22d0b?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8V09STEQlMjBNQVB8ZW58MHx8MHx8fDA%3D" alt="haryana image" />
-        </div>  
+        <MapContainer ref={mapRef} center={center} zoom={12} scrollWheelZoom={true} style={{ height: '100%', width: '100%' }}>
+            <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            
+            {/* Display markers for tourists with warning or SOS status */}
+            {tourists.filter(tourist => tourist.status === 'warning' || tourist.status === 'sos').map((tourist) => (
+                <Marker 
+                    key={tourist.id} 
+                    position={[tourist.location.lat, tourist.location.lng]}
+                    icon={touristMarkerIcon}
+                >
+                    <Popup>
+                        <div className="min-w-48">
+                            <h3 className="text-base font-semibold text-gray-800 ">{tourist.name}</h3>
+                            <p className="text-xs text-gray-600 ">
+                                <span className="font-semibold">ID:</span> {tourist.id}
+                            </p>
+                            <p className="text-xs text-gray-600 ">
+                                <span className="font-semibold">Itinerary:</span> {tourist.itinerary}
+                            </p>
+                            <span className={`inline-block px-2 py-0.5 text-xs rounded text-white ${tourist.status === "safe" ? "bg-green-500" : tourist.status === "warning" ? "bg-yellow-500" : "bg-red-500" }`}>
+                                {tourist.status.toUpperCase()}
+                            </span>
+                        </div>
+                    </Popup>
+                </Marker>
+            ))}
+
+            // Display markers for zones
+            {zones.map((zone) => (
+                <Circle
+                    key={zone.id}
+                    center={[zone.location.lat, zone.location.lng]} 
+                    radius={zone.radius || 800}
+                    pathOptions={{ color: 'red', fillColor: 'rgba(255,0,0,0.3)', fillOpacity: 0.5 }}
+                >
+                    <Popup>
+                        <div className="min-w-48">
+                            <h3 className="text-base font-semibold text-gray-800 ">{zone.name}</h3>
+                            <p className="text-xs text-gray-600 ">
+                                <span className="font-semibold">ID:</span> {zone.id}
+                            </p>
+                        </div>
+                    </Popup>
+                </Circle>
+            ))}
+        </MapContainer>  
     );
 }
 

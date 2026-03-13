@@ -1,44 +1,73 @@
-const API_BASE = '/api';
+const API_BASE = "/api";
+const MS_BASE = "/ms";
 
 async function request(path, options = {}) {
-  const token = localStorage.getItem('token');
-  const headers = {
-    'Content-Type': 'application/json',
-    ...(token && { Authorization: `Bearer ${token}` }),
-    ...options.headers
-  };
-  const res = await fetch(`${API_BASE}${path}`, { ...options, headers });
-  const data = await res.json().catch(() => ({}));
+    const token = localStorage.getItem("token");
+    const headers = {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+        ...options.headers,
+    };
 
-  if (res.status === 401) {
-    // Token invalid or expired – force logout on client
-    localStorage.removeItem('token');
-    if (window.location.pathname !== '/login') {
-      window.location.href = '/login';
+    const response = await fetch(`${API_BASE}${path}`, { ...options, headers });
+    const data = await response.json().catch(() => ({}));
+
+    if (!response.ok) {
+        throw new Error(data.message || "Request failed");
     }
-    throw new Error(data.message || 'Unauthorized');
-  }
 
-  if (!res.ok) throw new Error(data.message || 'Request failed');
-  return data;
+    return data;
 }
 
-// Auth
-export const api = {
-  login: (email, password) => request('/users/login', { method: 'POST', body: JSON.stringify({ email, password }) }),
-  signup: (body) => request('/users/signup', { method: 'POST', body: JSON.stringify(body) }),
+async function request1(path, options = {}) {
+    const token = localStorage.getItem("token");
+    const headers = {
+        "Content-Type": "application/json",
+        ...(token && { Authorization: `Bearer ${token}` }),
+        ...options.headers,
+    };
 
-  // Dashboard (no auth required)
-  getTourists: () => request('/dashboard/tourists'),
-  getAlerts: () => request('/dashboard/alerts'),
-  getZones: () => request('/dashboard/zones'),
+    const response = await fetch(`/ms${path}`, { ...options, headers });
+    const data = await response.json().catch(() => ({}));
 
-  // Alert status update (SOS only)
-  updateAlertStatus: (sosNotificationId, status) =>
-    request(`/sos-notifications/${sosNotificationId}/status`, {
-      method: 'PATCH',
-      body: JSON.stringify({ status })
+    if (!response.ok) {
+        throw new Error(data.message || "Request failed");
+    }
+
+    return data;
+}
+
+export const signup = (user) =>
+    request("/users/signup", {
+        method: "POST",
+        body: JSON.stringify(user),
+    });
+
+export const loginUser = (userData) =>
+    request("/users/login", {
+        method: "POST",
+        body: JSON.stringify(userData),
+    });
+
+// Dashboard (no auth required)
+export const getTourists = () => request1('/dashboard/tourists');
+export const getAlerts = () => request1('/alerts');
+export const getZones = () =>request1('/zones')
+
+// Alert status update (SOS only)
+export const updateAlertStatus = (sosNotificationId, status) =>
+    request1(`/sos-notifications/${sosNotificationId}/status`, {
+        method: 'PATCH',
+        body: JSON.stringify({ status })
     })
+
+const api = {
+    signup,
+    loginUser,
+    getTourists,
+    getAlerts,
+    getZones,
+    updateAlertStatus,
 };
 
 export default api;

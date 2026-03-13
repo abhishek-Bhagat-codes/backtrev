@@ -197,6 +197,19 @@ export const tourists = [
         emergencyContact: "+91 98XXXXXX08",
         location: { lat: 28.6280, lng: 77.2090 },
     },
+    {
+        id: "T-1016",
+        name: "Dev Malhotra",
+        itinerary: "Punjabi Bagh → Rajouri Garden",
+        status: "safe",
+        active: true,
+        gender: "male",
+        lastSeen: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
+        photoUrl: "",
+        emergencyContacts: [{ name: "Friend", phone: "+91 97XXXXXX11" }],
+        emergencyContact: "+91 97XXXXXX11",
+        location: { lat: 28.6040, lng: 77.1450 },
+    },
 ]; 
 
 export const alerts = [
@@ -406,5 +419,35 @@ export const zones = [
         name: "Connaught Place",
         risk: "High",
         location: { lat: 28.6315, lng: 77.2167 },
+    },
+    {
+        id: "Z-2",
+        name: "Chandni Chowk",
+        risk: "High",
+        location: { lat: 28.6562, lng: 77.2410 },
+    },
+    {
+        id: "Z-3",
+        name: "Karol Bagh",
+        risk: "Medium",
+        location: { lat: 28.6517, lng: 77.1907 },
+    },
+    {
+        id: "Z-4",
+        name: "Hauz Khas",
+        risk: "Medium",
+        location: { lat: 28.5494, lng: 77.2001 },
+    },
+    {
+        id: "Z-5",
+        name: "Nehru Place",
+        risk: "Low",
+        location: { lat: 28.5495, lng: 77.2510 },
+    },
+    {
+        id: "Z-6",
+        name: "Dwarka Sector 21",
+        risk: "Low",
+        location: { lat: 28.5562, lng: 77.1000 },
     },
 ];

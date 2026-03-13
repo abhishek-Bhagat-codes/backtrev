@@ -15,7 +15,7 @@ const Dashboard = ({ tourists, alerts, zones, updateAlertStatus, loading, error,
 
     return (
         <>
-            <DashboardHeader />
+            <DashboardHeader page="Dashboard" />
             {error && (
                 <div className="mb-4 p-3 bg-amber-900/30 border border-amber-700 rounded-lg text-amber-200 text-sm flex items-center justify-between gap-2">
                     <span>{error} (using demo data)</span>

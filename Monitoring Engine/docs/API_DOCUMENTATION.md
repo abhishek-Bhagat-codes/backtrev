@@ -388,6 +388,162 @@ Returns all risk zones. No request body.
 
 ---
 
+## Police Admin Dashboard APIs
+
+All admin APIs are mounted under `/api/admin/`. Use these for the police dashboard to monitor tourists in real time.
+
+### 7. Live Monitoring (All Active Users)
+
+**GET** `/api/admin/monitoring/live`
+
+Returns all currently active users and their latest monitoring status. Query latest location from `user_location_history` with optimized SQL. Suitable for polling every 5–10 seconds.
+
+#### Success Response (200)
+
+```json
+[
+  {
+    "user_id": "user-123",
+    "trip_id": 1,
+    "location": { "lat": 28.615, "lng": 77.2105 },
+    "safety_score": 78,
+    "safety_level": "WARNING",
+    "deviation": false,
+    "zones": []
+  },
+  {
+    "user_id": "user-456",
+    "trip_id": 2,
+    "location": { "lat": 28.621, "lng": 77.214 },
+    "safety_score": 42,
+    "safety_level": "HIGH_RISK",
+    "deviation": true,
+    "zones": [
+      { "name": "Old Delhi Crowded Market", "distance": 84.3 }
+    ]
+  }
+]
+```
+
+| Field | Description |
+|-------|-------------|
+| user_id | User identifier |
+| trip_id | Active trip ID |
+| location | Latest GPS point (`null` if no location history) |
+| safety_score | 0–100 |
+| safety_level | `SAFE` \| `WARNING` \| `HIGH_RISK` |
+| deviation | `true` if user is off expected route |
+| zones | Risk zones INSIDE or APPROACHING (name + distance in meters) |
+
+---
+
+### 8. Single User Monitoring
+
+**GET** `/api/admin/monitoring/user/:user_id`
+
+Returns the latest monitoring state for a specific user. Includes latest location, current trip, deviation, risk zones, and safety score.
+
+#### Path Parameters
+
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| user_id | string | ID of the user/tourist |
+
+#### Success Response (200)
+
+```json
+{
+  "user_id": "user-123",
+  "trip_id": 1,
+  "current_location": { "lat": 28.615, "lng": 77.2105 },
+  "deviation": false,
+  "risk_zones": [],
+  "safety_score": 78,
+  "safety_level": "WARNING"
+}
+```
+
+#### Error Response (404)
+
+```json
+{
+  "error": "User not found or has no active trip",
+  "user_id": "user-999"
+}
+```
+
+---
+
+### 9. Active Trips
+
+**GET** `/api/admin/monitoring/trips`
+
+Returns all currently active trips.
+
+#### Success Response (200)
+
+```json
+[
+  {
+    "trip_id": 1,
+    "user_id": "user-123",
+    "origin": [28.6139, 77.209],
+    "destination": [28.62, 77.22],
+    "status": "active"
+  }
+]
+```
+
+---
+
+### 10. Admin Zones (CRUD)
+
+#### GET `/api/admin/zones`
+
+Lists all risk zones. Same as `/zones` but under admin namespace.
+
+#### POST `/api/admin/zones`
+
+Creates a new risk zone. Same body as `POST /zones`:
+
+```json
+{
+  "name": "Old Delhi Crowded Market",
+  "latitude": 28.6562,
+  "longitude": 77.241,
+  "radius": 300,
+  "type": "crime zone",
+  "expiry_type": "infinite",
+  "expiry_time": null,
+  "risk_level": 4
+}
+```
+
+#### DELETE `/api/admin/zones/:id`
+
+Deletes a risk zone by ID.
+
+**Success (200):**
+
+```json
+{
+  "success": true,
+  "id": 3,
+  "message": "Zone deleted"
+}
+```
+
+**Not Found (404):**
+
+```json
+{
+  "error": "Zone not found",
+  "id": 999
+}
+```
+
+---
+
 ## Safety Score System
 
 The safety score is **0–100**, calculated on every `/location` call.

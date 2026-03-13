@@ -1,27 +1,16 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Tourist from "./pages/Tourists";
 import Login from "./pages/Login";
-import Signup from "./pages/Signup";
 import TouristDetail from "./pages/TouristDetail";
 import Alerts from "./pages/Alerts";
 import Reports from "./pages/Reports";
 import RiskyZones from "./pages/RiskyZones";
 import AppLayout from "./components/layout/AppLayout";
 import { tourists as dummyTourists, alerts as dummyAlerts, zones as dummyZones } from "./data/dummyData";
-import api from "./services/api";
-import { AuthProvider, useAuth } from "./context/AuthContext";
-
-const PrivateRoute = ({ children }) => {
-  const { isAuthenticated } = useAuth();
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return children;
-};
+import {getTourists, getAlerts, getZones, updateAlertStatus} from "./services/api";
+import Signup from "./pages/Signup";
 
 const App = () => {
   const [tourists, setTourists] = useState(dummyTourists);
@@ -30,6 +19,7 @@ const App = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [useDummy, setUseDummy] = useState(false);
+
 
   const fetchData = useCallback(async () => {
     if (useDummy) {
@@ -40,9 +30,9 @@ const App = () => {
     setError(null);
     try {
       const [touristsRes, alertsRes, zonesRes] = await Promise.all([
-        api.getTourists(),
-        api.getAlerts(),
-        api.getZones()
+        getTourists(),
+        getAlerts(),
+        getZones()
       ]);
       setTourists(touristsRes.tourists || []);
       setAlerts(alertsRes.alerts || []);
@@ -65,7 +55,7 @@ const App = () => {
     const alert = alerts.find((a) => a.id === alertId);
     if (alert?._type === "SOS" && alert?._backendId) {
       try {
-        await api.updateAlertStatus(alert._backendId, newStatus);
+        await updateAlertStatus(alert._backendId, newStatus);
         setAlerts((prev) =>
           prev.map((a) => (a.id === alertId ? { ...a, status: newStatus } : a))
         );
@@ -80,17 +70,10 @@ const App = () => {
   };
 
   return (
-    <Router>
-      <AuthProvider>
+    <>
+      <Router>
         <Routes>
-          <Route
-            path="/"
-            element={
-              <PrivateRoute>
-                <AppLayout />
-              </PrivateRoute>
-            }
-          >
+          <Route path="/" element={<AppLayout />}>
             <Route
               index
               element={
@@ -98,10 +81,10 @@ const App = () => {
                   tourists={tourists}
                   alerts={alerts}
                   zones={zones}
-                  updateAlertStatus={updateAlertStatus}
+                  // updateAlertStatus={updateAlertStatus}
                   loading={loading}
                   error={error}
-                  onRetry={fetchData}
+                  // onRetry={fetchData}
                   useDummy={useDummy}
                   setUseDummy={setUseDummy}
                 />
@@ -115,17 +98,21 @@ const App = () => {
             <Route
               path="alerts"
               element={
-                <Alerts alerts={alerts} updateAlertStatus={updateAlertStatus} loading={loading} />
+                <Alerts 
+                  alerts={alerts} 
+                  // updateAlertStatus={updateAlertStatus} 
+                  loading={loading} 
+                />
               }
             />
-            <Route path="reports" element={<Reports />} />
+            <Route path="reports" element={<Reports zones={zones}/>} />
             <Route path="riskyzones" element={<RiskyZones zones={zones} loading={loading} />} />
           </Route>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route path="login" element={<Login />} />
+          <Route path="signup" element={<Signup />} />
         </Routes>
-      </AuthProvider>
-    </Router>
+      </Router>
+    </>
   );
 };
 

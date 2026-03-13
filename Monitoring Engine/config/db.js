@@ -81,6 +81,20 @@ db.serialize(() => {
       FOREIGN KEY (trip_id) REFERENCES user_trips(trip_id)
     )`
   );
+
+  // Indexes for admin monitoring performance (latest location per user)
+  db.run(
+    `CREATE INDEX IF NOT EXISTS idx_location_history_user_ts
+     ON user_location_history(user_id, timestamp)`
+  );
+  db.run(
+    `CREATE INDEX IF NOT EXISTS idx_user_trips_status
+     ON user_trips(status)`
+  );
+  db.run(
+    `CREATE INDEX IF NOT EXISTS idx_safety_scores_user_trip
+     ON safety_scores(user_id, trip_id, id)`
+  );
 });
 
 module.exports = db;
