@@ -1,7 +1,7 @@
 import React from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle} from 'react-leaflet'
 import 'leaflet/dist/leaflet.css';
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { User } from "lucide-react";
 import L from 'leaflet';
 import { renderToStaticMarkup } from 'react-dom/server';
@@ -21,7 +21,29 @@ function getZoneCoords(zone) {
 const RISK_COLORS = { 1: '#10b981', 2: '#f59e0b', 3: '#f59e0b', 4: '#ef4444', 5: '#ef4444' };
 
 const MapView = ({ tourists = [], zones = [] }) => {
-    const [center] = useState([28.6448, 77.216721]);  
+    const center = useMemo(() => {
+        const firstTourist = tourists[0];
+        if (firstTourist?.location?.lat != null && firstTourist?.location?.lng != null) {
+            return [firstTourist.location.lat, firstTourist.location.lng];
+        }
+        return [28.6448, 77.216721];
+    }, [tourists]);
+
+    const visibleTourists = useMemo(() => {
+        if (tourists.length === 1) {
+            return tourists.filter(
+                (tourist) => tourist?.location?.lat != null && tourist?.location?.lng != null
+            );
+        }
+
+        return tourists.filter(
+            (tourist) =>
+                (tourist.status === 'warning' || tourist.status === 'sos') &&
+                tourist?.location?.lat != null &&
+                tourist?.location?.lng != null
+        );
+    }, [tourists]);
+
     const mapRef = React.useRef();
 
     const touristMarkerIcon = useMemo(() => {
@@ -47,8 +69,8 @@ const MapView = ({ tourists = [], zones = [] }) => {
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
             
-            {/* Display markers for tourists with warning or SOS status */}
-            {tourists.filter(tourist => tourist.status === 'warning' || tourist.status === 'sos').map((tourist) => (
+            {/* In detail view (single tourist), always show marker. In dashboard, show warning/SOS only. */}
+            {visibleTourists.map((tourist) => (
                 <Marker 
                     key={tourist.id} 
                     position={[tourist.location.lat, tourist.location.lng]}

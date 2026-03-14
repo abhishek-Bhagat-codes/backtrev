@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import DashboardHeader from '../components/dashboard/DashboardHeader';
 import { User } from 'lucide-react';
 import AlertHistory from "../components/tourists/AlertHistory";
+import MapView from "../components/map/MapView";
 
 const TouristDetail = ({ tourists, alerts }) => {
     const { touristId } = useParams(); // example -> returns T-1001
@@ -43,7 +44,7 @@ const TouristDetail = ({ tourists, alerts }) => {
                     {/* MAP CARD */}
                     <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
                         {/* MapView yahan aayega */}
-                        <div className="h-105 flex items-center justify-center text-gray-500">Map View</div>
+                        <div className="h-105 flex items-center justify-center text-gray-500"><MapView tourists={[tourist]} /></div>
                     </div>
 
                     {/* ALERT HISTORY */}
