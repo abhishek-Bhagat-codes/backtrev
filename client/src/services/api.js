@@ -58,7 +58,19 @@ export const loginUser = (userData) =>
 // Dashboard (no auth required)
 export const getTourists = async () => {
     const response = await request('/dashboard/tourists');
-    const tourists = response?.tourists || response?.data?.tourists || [];
+    const touristsRaw = response?.tourists || response?.data?.tourists || [];
+    const tourists = Array.isArray(touristsRaw)
+        ? touristsRaw.map((tourist) => {
+            const userId = String(tourist.id || tourist.userId || tourist._id || 'UNKNOWN');
+            const touristCode = getTouristCode(userId);
+
+            return {
+                ...tourist,
+                touristCode,
+                displayId: `A-${touristCode}-1`,
+            };
+        })
+        : [];
 
     console.group('Tourists Debug');
     console.log('Endpoint:', '/api/dashboard/tourists');
