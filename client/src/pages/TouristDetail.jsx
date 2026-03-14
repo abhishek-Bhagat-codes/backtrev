@@ -17,7 +17,7 @@ const TouristDetail = ({ tourists, alerts }) => {
 
     return (
         <>
-            <DashboardHeader />
+            <DashboardHeader page={`Tourists/${tourist.displayId || tourist.touristCode || tourist.id}`} />
             <div className="grid grid-cols-[340px_1fr] gap-6">
                 {/* LEFT PANEL */}
                 <div className="bg-gray-900 border border-gray-800 rounded-lg p-5">
@@ -26,7 +26,7 @@ const TouristDetail = ({ tourists, alerts }) => {
                             <User size={32} className="text-gray-300" />
                         </div>
                         <h2 className="text-lg font-semibold">{tourist.name}</h2>
-                        <p className="text-sm text-gray-400">{tourist.id}</p>
+                        <p className="text-sm text-gray-400">{tourist.displayId || tourist.touristCode || tourist.id}</p>
                     </div>
 
                     <div className="mt-4 space-y-3 text-sm">

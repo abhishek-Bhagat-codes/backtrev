@@ -7,6 +7,20 @@ const mapSosStatusToUi = (status) => {
     return "active";
 };
 
+const touristCodeMap = new Map();
+let nextTouristNumber = 1001;
+
+const getTouristCode = (rawUserId) => {
+    const userId = String(rawUserId || "UNKNOWN");
+
+    if (!touristCodeMap.has(userId)) {
+        touristCodeMap.set(userId, `T-${nextTouristNumber}`);
+        nextTouristNumber += 1;
+    }
+
+    return touristCodeMap.get(userId);
+};
+
 async function request(path, options = {}) {
     const token = localStorage.getItem("token");
     const headers = {
@@ -90,19 +104,11 @@ export const getAlerts = async () => {
     const alerts = [];
 
     if (Array.isArray(sosNotifications)) {
-        const userCodeMap = new Map();
         const userAlertCountMap = new Map();
-        let nextTouristNumber = 1001;
 
         sosNotifications.forEach((item) => {
             const userId = String(item.userId?._id || item.userId || 'UNKNOWN');
-
-            if (!userCodeMap.has(userId)) {
-                userCodeMap.set(userId, `T-${nextTouristNumber}`);
-                nextTouristNumber += 1;
-            }
-
-            const touristCode = userCodeMap.get(userId);
+            const touristCode = getTouristCode(userId);
             const nextAlertCount = (userAlertCountMap.get(userId) || 0) + 1;
             userAlertCountMap.set(userId, nextAlertCount);
 
