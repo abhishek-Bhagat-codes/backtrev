@@ -1,5 +1,4 @@
 const API_BASE = "/api";
-const MS_BASE = "/ms";
 
 const mapSosStatusToUi = (status) => {
     if (status === "pending") return "active";
@@ -57,7 +56,22 @@ export const loginUser = (userData) =>
     });
 
 // Dashboard (no auth required)
-export const getTourists = () => request1('/dashboard/tourists');
+export const getTourists = async () => {
+    const response = await request('/dashboard/tourists');
+    const tourists = response?.tourists || response?.data?.tourists || [];
+
+    console.group('Tourists Debug');
+    console.log('Endpoint:', '/api/dashboard/tourists');
+    console.log('Token present:', Boolean(localStorage.getItem('token')));
+    console.log('Raw response:', response);
+    console.log('Parsed tourists:', tourists);
+    console.log('Tourist count:', Array.isArray(tourists) ? tourists.length : 'not-an-array');
+    console.groupEnd();
+
+    return {
+        tourists,
+    };
+};
 export const getAlerts = async () => {
     const response = await request('/sos-notifications/all');
     const sosNotifications = response?.sosNotifications || response?.alerts || response?.data?.alerts || [];
