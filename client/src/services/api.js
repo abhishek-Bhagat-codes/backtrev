@@ -86,13 +86,13 @@ export const getTourists = async () => {
         })
         : [];
 
-    console.group('Tourists Debug');
-    console.log('Endpoint:', '/api/dashboard/tourists');
-    console.log('Token present:', Boolean(localStorage.getItem('token')));
-    console.log('Raw response:', response);
-    console.log('Parsed tourists:', tourists);
-    console.log('Tourist count:', Array.isArray(tourists) ? tourists.length : 'not-an-array');
-    console.groupEnd();
+    // console.group('Tourists Debug');
+    // console.log('Endpoint:', '/api/dashboard/tourists');
+    // console.log('Token present:', Boolean(localStorage.getItem('token')));
+    // console.log('Raw response:', response);
+    // console.log('Parsed tourists:', tourists);
+    // console.log('Tourist count:', Array.isArray(tourists) ? tourists.length : 'not-an-array');
+    // console.groupEnd();
 
     return {
         tourists,
@@ -130,13 +130,13 @@ export const getAlerts = async () => {
         });
     }
 
-    console.group('SOS Alerts Debug');
-    console.log('Endpoint:', '/api/sos-notifications/all');
-    console.log('Raw response:', response);
-    console.log('Raw sosNotifications:', sosNotifications);
-    console.log('Parsed alerts:', alerts);
-    console.log('Alert count:', Array.isArray(alerts) ? alerts.length : 'not-an-array');
-    console.groupEnd(); 
+    // console.group('SOS Alerts Debug');
+    // console.log('Endpoint:', '/api/sos-notifications/all');
+    // console.log('Raw response:', response);
+    // console.log('Raw sosNotifications:', sosNotifications);
+    // console.log('Parsed alerts:', alerts);
+    // console.log('Alert count:', Array.isArray(alerts) ? alerts.length : 'not-an-array');
+    // console.groupEnd(); 
 
     return {
         alerts,

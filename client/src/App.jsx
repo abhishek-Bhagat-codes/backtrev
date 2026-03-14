@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Tourist from "./pages/Tourists";
 import Login from "./pages/Login";
@@ -94,6 +94,10 @@ const App = () => {
           <Route path="/" element={<AppLayout />}>
             <Route
               index
+              element={<Navigate to="/login" replace />}
+            />
+            <Route
+              path="dashboard"
               element={
                 <Dashboard
                   tourists={tourists}
