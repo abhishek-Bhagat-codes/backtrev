@@ -2,6 +2,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import DashboardHeader from '../components/dashboard/DashboardHeader';
 import { User } from 'lucide-react';
 import AlertHistory from "../components/tourists/AlertHistory";
+import MapView from "../components/map/MapView";
 
 const TouristDetail = ({ tourists, alerts }) => {
     const { touristId } = useParams(); // example -> returns T-1001
@@ -17,7 +18,7 @@ const TouristDetail = ({ tourists, alerts }) => {
 
     return (
         <>
-            <DashboardHeader />
+            <DashboardHeader page={`Tourists/${tourist.displayId || tourist.touristCode || tourist.id}`} />
             <div className="grid grid-cols-[340px_1fr] gap-6">
                 {/* LEFT PANEL */}
                 <div className="bg-gray-900 border border-gray-800 rounded-lg p-5">
@@ -26,7 +27,7 @@ const TouristDetail = ({ tourists, alerts }) => {
                             <User size={32} className="text-gray-300" />
                         </div>
                         <h2 className="text-lg font-semibold">{tourist.name}</h2>
-                        <p className="text-sm text-gray-400">{tourist.id}</p>
+                        <p className="text-sm text-gray-400">{tourist.displayId || tourist.touristCode || tourist.id}</p>
                     </div>
 
                     <div className="mt-4 space-y-3 text-sm">
@@ -43,7 +44,7 @@ const TouristDetail = ({ tourists, alerts }) => {
                     {/* MAP CARD */}
                     <div className="bg-gray-900 border border-gray-800 rounded-xl overflow-hidden">
                         {/* MapView yahan aayega */}
-                        <div className="h-105 flex items-center justify-center text-gray-500">Map View</div>
+                        <div className="h-105 flex items-center justify-center text-gray-500"><MapView tourists={[tourist]} /></div>
                     </div>
 
                     {/* ALERT HISTORY */}

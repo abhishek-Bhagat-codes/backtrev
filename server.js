@@ -35,6 +35,11 @@ app.use('/api/sos-notifications', sosNotificationRouter);
 app.use('/api/dashboard', dashboardRouter);
 
 
+app.get('/', (req, res) => {
+    res.send('Welcome to the SafeDrive API!');
+
+});
+
 // Start the server
 connectDB().then(() => { // Ensure DB is connected before starting server
     app.listen(PORT, () => {

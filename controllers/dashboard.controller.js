@@ -135,8 +135,11 @@ module.exports = {
             const zones = geofences.map((g) => ({
                 id: g._id.toString(),
                 name: g.areaName,
-                risk: g.alertLevel ? g.alertLevel.charAt(0).toUpperCase() + g.alertLevel.slice(1) : 'Medium', //1st char uppercase 
-                location: { lat: g.latitude, lng: g.longitude }
+                risk: g.alertLevel ? g.alertLevel.charAt(0).toUpperCase() + g.alertLevel.slice(1) : 'Medium',
+                risk_level: g.alertLevel === 'low' ? 1 : g.alertLevel === 'medium' ? 3 : g.alertLevel === 'high' ? 4 : 5,
+                location: { lat: g.latitude, lng: g.longitude },
+                radius: g.radius ?? 300,
+                center: [g.longitude, g.latitude]
             }));
             return res.json({ 
                 success: true,

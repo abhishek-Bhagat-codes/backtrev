@@ -14,7 +14,7 @@ const TouristRow = ({ tourist }) => {
 
     return (
         <tr onClick={handleRowClick} className="border-t border-gray-800 hover:bg-gray-900/50 hover:cursor-pointer">
-            <td className="p-3">{tourist.id}</td>
+            <td className="p-3">{tourist.displayId || tourist.touristCode || tourist.id}</td>
             <td className="p-3 font-medium">{tourist.name}</td>
             <td className="p-3">{tourist.itinerary}</td>
             <td className="p-3">

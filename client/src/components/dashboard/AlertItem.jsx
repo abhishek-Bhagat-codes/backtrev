@@ -14,7 +14,7 @@ const AlertItem = ({ alert, updateAlertStatus}) => {
             {/* TOP */}
             <div className="space-y-2">
                 <div className="flex justify-between items-start">
-                    <h3 className="text-sm font-semibold">{alert.type} – {alert.id}</h3>
+                    <h3 className="text-sm font-semibold">{alert.type} – {alert.displayId || alert.id}</h3>
                     <span className={`text-xs px-2.5 py-1 rounded-full border ${statusStyles[alert.status]}`} >{alert.status}</span> 
                 </div>
 
@@ -22,7 +22,7 @@ const AlertItem = ({ alert, updateAlertStatus}) => {
                     <div className="w-7 h-7 flex items-center justify-center rounded-full bg-gray-700">
                         <User size={20} className="text-gray-300" />    
                     </div>
-                    <span><h4>{alert.name} ( {alert.touristId} )</h4></span>
+                    <span><h4>{alert.name} ( {alert.touristCode || alert.touristId} )</h4></span>
                 </div>
 
                 <p className="text-xs text-gray-500">{alert.time}</p>

@@ -17,7 +17,7 @@ const AppLayout = () => {
                 </div>
 
                 <nav className="space-y-2 mt-3">
-                    <NavLink to="/" className={({ isActive }) => `flex items-center gap-3 px-4 py-2 rounded-md transition ${isActive ? "bg-blue-900/40 text-blue-500  border border-blue-900" : "hover:bg-green-900/50"}`}>
+                    <NavLink to="/dashboard" className={({ isActive }) => `flex items-center gap-3 px-4 py-2 rounded-md transition ${isActive ? "bg-blue-900/40 text-blue-500  border border-blue-900" : "hover:bg-green-900/50"}`}>
                         <LayoutDashboard size={18} />
                         <span>Dashboard</span>
                     </NavLink>

@@ -1,0 +1,11 @@
+node_modules
+plan_file
+
+
+presentation_demo
+
+presentation_demo/*.txt
+
+
+.venv
+.venv/*

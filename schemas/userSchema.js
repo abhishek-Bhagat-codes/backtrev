@@ -16,8 +16,6 @@ const UserSchema = new Schema({
   collection: 'users',
 });
 
-UserSchema.index({ phoneNumber: 1 }, { unique: true });
-UserSchema.index({ email: 1 }, { unique: true }); 
 
 module.exports = UserSchema;
 

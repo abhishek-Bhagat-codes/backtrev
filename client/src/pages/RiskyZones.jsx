@@ -1,122 +1,96 @@
-import { useEffect, useRef, useState } from "react";
-import { zones as dummyZones } from "../data/dummyData";
+import { useState } from "react";
 import DashboardHeader from "../components/dashboard/DashboardHeader";
+import MapView from "../components/map/MapView";
+import { createZone } from "../services/api";
 
 const RISK_COLORS = {
-    High: { text: "text-red-400", bg: "bg-red-500", dot: "#ef4444" },
-    Medium: { text: "text-amber-400", bg: "bg-amber-500", dot: "#f59e0b" },
-    Low: { text: "text-emerald-400", bg: "bg-emerald-500", dot: "#10b981" },
+    1: { text: "text-emerald-400", bg: "bg-emerald-500", dot: "#10b981" },
+    2: { text: "text-amber-400", bg: "bg-amber-500", dot: "#f59e0b" },
+    3: { text: "text-amber-400", bg: "bg-amber-500", dot: "#f59e0b" },
+    4: { text: "text-red-400", bg: "bg-red-500", dot: "#ef4444" },
+    5: { text: "text-red-400", bg: "bg-red-500", dot: "#ef4444" },
 };
 
-function toLocalZone(zone) {
+// API returns center: [lng, lat]; legacy/dummy may have location: { lat, lng }
+function toDisplayZone(zone) {
+    let lat, lng;
+    if (zone.center && Array.isArray(zone.center)) {
+        [lng, lat] = zone.center;
+    } else if (zone.location) {
+        lat = zone.location.lat;
+        lng = zone.location.lng;
+    } else {
+        lat = 28.6139;
+        lng = 77.209;
+    }
     return {
         id: zone.id,
         name: zone.name,
-        lat: zone.location?.lat ?? 28.6139,
-        lng: zone.location?.lng ?? 77.209,
-        risk: zone.risk || "High",
-        notes: zone.notes || "",
+        lat,
+        lng,
+        radius: zone.radius ?? 300,
+        type: zone.type || "risk zone",
+        risk_level: zone.risk_level ?? (zone.risk === "High" ? 4 : zone.risk === "Medium" ? 3 : 2),
     };
 }
 
-function MapPreview({ zones }) {
-    const mapRef = useRef(null);
-    const mapInstanceRef = useRef(null);
-    const markersRef = useRef([]);
-    const [mapLoaded, setMapLoaded] = useState(false);
-
-    useEffect(() => {
-        if (mapLoaded || mapInstanceRef.current) return;
-
-        const link = document.createElement("link");
-        link.rel = "stylesheet";
-        link.href = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css";
-        document.head.appendChild(link);
-
-        const script = document.createElement("script");
-        script.src = "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js";
-        script.onload = () => {
-            const L = window.L;
-            const map = L.map(mapRef.current).setView([28.6139, 77.209], 11);
-            L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-                attribution: '© <a href="https://www.openstreetmap.org/copyright">OSM</a>',
-            }).addTo(map);
-            mapInstanceRef.current = map;
-            setMapLoaded(true);
-        };
-        document.head.appendChild(script);
-    }, [mapLoaded]);
-
-    useEffect(() => {
-        if (!mapLoaded || !mapInstanceRef.current) return;
-
-        const L = window.L;
-        const map = mapInstanceRef.current;
-
-        markersRef.current.forEach((marker) => map.removeLayer(marker));
-        markersRef.current = [];
-
-        zones.forEach((zone) => {
-            const color = RISK_COLORS[zone.risk]?.dot || "#ef4444";
-            const icon = L.divIcon({
-                className: "",
-                html: `<div style="width:18px;height:18px;background:${color};border-radius:50%;border:2px solid white;box-shadow:0 0 8px ${color}88;"></div>`,
-                iconSize: [18, 18],
-                iconAnchor: [9, 9],
-            });
-
-            const marker = L.marker([zone.lat, zone.lng], { icon })
-                .addTo(map)
-                .bindPopup(`<b>${zone.name}</b><br/>Risk: ${zone.risk}${zone.notes ? `<br/>${zone.notes}` : ""}`);
-
-            markersRef.current.push(marker);
-        });
-    }, [zones, mapLoaded]);
-
-    return (
-        <div className="h-105 rounded-xl overflow-hidden border border-white/10">
-            <div ref={mapRef} className="h-full w-full" />
-        </div>
-    );
-}
-
-export default function RiskyZones() {
-    const [zones, setZones] = useState(() => dummyZones.map(toLocalZone));
-    const [form, setForm] = useState({ name: "", lat: "", lng: "", risk: "High", notes: "" });
+export default function RiskyZones({ zones = [], loading = false, onRefresh }) {
+    const [form, setForm] = useState({
+        name: "",
+        latitude: "",
+        longitude: "",
+        radius: "300",
+        type: "crime zone",
+        risk_level: 4,
+    });
     const [error, setError] = useState("");
+    const [adding, setAdding] = useState(false);
     const [added, setAdded] = useState(false);
+
+    const displayZones = zones.map(toDisplayZone);
 
     const inputCls =
         "w-full bg-gray-950 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-slate-200 placeholder-slate-600 focus:outline-none focus:border-blue-500/60 focus:ring-1 focus:ring-blue-500/30 transition-all";
 
-    const handleAdd = () => {
+    const handleAdd = async () => {
         if (!form.name.trim()) {
             setError("Zone name is required.");
             return;
         }
 
+        const lat = Number.parseFloat(form.latitude) || 28.6139;
+        const lng = Number.parseFloat(form.longitude) || 77.209;
+        const radius = Number.parseFloat(form.radius) || 300;
+
         setError("");
-        const newZone = {
-            id: `Z-${Date.now()}`,
-            name: form.name.trim(),
-            lat: Number.parseFloat(form.lat) || 28.6139,
-            lng: Number.parseFloat(form.lng) || 77.209,
-            risk: form.risk,
-            notes: form.notes.trim(),
-        };
+        setAdding(true);
 
-        setZones((prev) => [...prev, newZone]);
-        setForm({ name: "", lat: "", lng: "", risk: "High", notes: "" });
-        setAdded(true);
-        setTimeout(() => setAdded(false), 1600);
-    };
+        try {
+            await createZone({
+                name: form.name.trim(),
+                latitude: lat,
+                longitude: lng,
+                radius,
+                type: form.type || "crime zone",
+                expiry_type: "infinite",
+                expiry_time: null,
+                risk_level: Number(form.risk_level) || 4,
+            });
 
-    const handleDelete = (id) => {
-        setZones((prev) => prev.filter((zone) => zone.id !== id));
+            setForm({ name: "", latitude: "", longitude: "", radius: "300", type: "crime zone", risk_level: 4 });
+            setAdded(true);
+            setTimeout(() => setAdded(false), 1600);
+
+            if (onRefresh) onRefresh();
+        } catch (err) {
+            setError(err.message || "Failed to create zone");
+        } finally {
+            setAdding(false);
+        }
     };
 
     return (
-        <>    
+        <>
             <DashboardHeader page="Risky Zones" />
             <div className="min-h-screen text-slate-200 p-6">
                 <div className="max-w-7xl mx-auto">
@@ -126,10 +100,10 @@ export default function RiskyZones() {
                                 <h2 className="text-sm font-semibold text-white tracking-wide uppercase">Add Risky Zone</h2>
 
                                 <div>
-                                    <label className="block text-xs text-slate-500  mb-1.5 uppercase tracking-wider">Zone Name</label>
+                                    <label className="block text-xs text-slate-500 mb-1.5 uppercase tracking-wider">Zone Name</label>
                                     <input
                                         className={inputCls}
-                                        placeholder="e.g., Chandni Chowk"
+                                        placeholder="e.g., Old Delhi Crowded Market"
                                         value={form.name}
                                         onChange={(e) => setForm({ ...form, name: e.target.value })}
                                     />
@@ -140,89 +114,104 @@ export default function RiskyZones() {
                                         <label className="block text-xs text-slate-500 mb-1.5 uppercase tracking-wider">Latitude</label>
                                         <input
                                             className={inputCls}
-                                            placeholder="28.6139"
-                                            value={form.lat}
-                                            onChange={(e) => setForm({ ...form, lat: e.target.value })}
+                                            placeholder="28.6562"
+                                            value={form.latitude}
+                                            onChange={(e) => setForm({ ...form, latitude: e.target.value })}
                                         />
                                     </div>
                                     <div>
                                         <label className="block text-xs text-slate-500 mb-1.5 uppercase tracking-wider">Longitude</label>
                                         <input
                                             className={inputCls}
-                                            placeholder="77.2090"
-                                            value={form.lng}
-                                            onChange={(e) => setForm({ ...form, lng: e.target.value })}
+                                            placeholder="77.241"
+                                            value={form.longitude}
+                                            onChange={(e) => setForm({ ...form, longitude: e.target.value })}
                                         />
                                     </div>
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs text-slate-500 mb-1.5 uppercase tracking-wider">Risk Level</label>
+                                    <label className="block text-xs text-slate-500 mb-1.5 uppercase tracking-wider">Radius (meters)</label>
+                                    <input
+                                        className={inputCls}
+                                        placeholder="300"
+                                        type="number"
+                                        min="50"
+                                        max="5000"
+                                        value={form.radius}
+                                        onChange={(e) => setForm({ ...form, radius: e.target.value })}
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-xs text-slate-500 mb-1.5 uppercase tracking-wider">Type</label>
                                     <select
                                         className={`${inputCls} cursor-pointer`}
-                                        value={form.risk}
-                                        onChange={(e) => setForm({ ...form, risk: e.target.value })}
+                                        value={form.type}
+                                        onChange={(e) => setForm({ ...form, type: e.target.value })}
                                     >
-                                        <option>High</option>
-                                        <option>Medium</option>
-                                        <option>Low</option>
+                                        <option value="crime zone">Crime Zone</option>
+                                        <option value="crowded area">Crowded Area</option>
+                                        <option value="high risk">High Risk</option>
+                                        <option value="other">Other</option>
                                     </select>
                                 </div>
 
                                 <div>
-                                    <label className="block text-xs text-slate-500 mb-1.5 uppercase tracking-wider">Notes</label>
-                                    <input
-                                        className={inputCls}
-                                        placeholder="Optional details"
-                                        value={form.notes}
-                                        onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                                    />
+                                    <label className="block text-xs text-slate-500 mb-1.5 uppercase tracking-wider">Risk Level (1-5)</label>
+                                    <select
+                                        className={`${inputCls} cursor-pointer`}
+                                        value={form.risk_level}
+                                        onChange={(e) => setForm({ ...form, risk_level: Number(e.target.value) })}
+                                    >
+                                        <option value={1}>1 - Low</option>
+                                        <option value={2}>2 - Medium-Low</option>
+                                        <option value={3}>3 - Medium</option>
+                                        <option value={4}>4 - High</option>
+                                        <option value={5}>5 - Critical</option>
+                                    </select>
                                 </div>
 
                                 {error && <p className="text-xs text-red-400">{error}</p>}
 
                                 <button
                                     onClick={handleAdd}
-                                    className="w-full py-2.5 cursor-pointer rounded-lg text-sm font-semibold transition-all bg-blue-600 hover:bg-blue-500 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40"
+                                    disabled={adding}
+                                    className="w-full py-2.5 cursor-pointer rounded-lg text-sm font-semibold transition-all bg-blue-600 hover:bg-blue-500 text-white focus:outline-none focus:ring-2 focus:ring-blue-500/40 disabled:opacity-60 disabled:cursor-not-allowed"
                                 >
-                                    {added ? "Zone Added" : "Add Zone"}
+                                    {adding ? "Adding..." : added ? "Zone Added" : "Add Zone"}
                                 </button>
                             </div>
 
-                        <div className="rounded-2xl bg-gray-900/40 border border-gray-700 px-6 py-5 shadow-[0_0_0_1px_rgba(10,36,77,0.15)]">
-                                <h2 className="mb-6  font-semibold text-white">All Risky Zones</h2>
+                            <div className="rounded-2xl bg-gray-900/40 border border-gray-700 px-6 py-5 shadow-[0_0_0_1px_rgba(10,36,77,0.15)]">
+                                <h2 className="mb-6 font-semibold text-white">All Risky Zones</h2>
 
-                                {zones.length === 0 ? (
-                                    <p className="py-8 text-center text-sm text-slate-500">No zones available.</p>
+                                {loading ? (
+                                    <p className="py-8 text-center text-sm text-slate-500">Loading zones...</p>
+                                ) : displayZones.length === 0 ? (
+                                    <p className="py-8 text-center text-sm text-slate-500">No zones yet. Add one above to get started.</p>
                                 ) : (
                                     <div className="overflow-y-auto max-h-80 scrollbar-none [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                                        <div className="grid grid-cols-[1.5fr_1fr_1fr_0.8fr_0.8fr] items-center border-b border-white/10 px-4 pb-3 text-sm font-semibold text-slate-400 uppercase tracking-wider">
+                                        <div className="grid grid-cols-[1.5fr_1fr_1fr_1fr_0.8fr] items-center border-b border-white/10 px-4 pb-3 text-sm font-semibold text-slate-400 uppercase tracking-wider">
                                             <span>Name</span>
                                             <span>Latitude</span>
                                             <span>Longitude</span>
+                                            <span>Radius</span>
                                             <span>Risk</span>
-                                            <span className="text-right">Actions</span>
                                         </div>
 
-                                        {zones.map((zone) => (
+                                        {displayZones.map((zone) => (
                                             <div
                                                 key={zone.id}
-                                                className="grid grid-cols-[1.5fr_1fr_1fr_0.8fr_0.8fr] items-center border-b border-white/10 px-4 py-3 text-sm text-slate-200 last:border-b-0 hover:bg-white/5 transition-colors"
+                                                className="grid grid-cols-[1.5fr_1fr_1fr_1fr_0.8fr] items-center border-b border-white/10 px-4 py-3 text-sm text-slate-200 last:border-b-0 hover:bg-white/5 transition-colors"
                                             >
                                                 <span className="pr-4 font-medium text-white">{zone.name}</span>
                                                 <span className="text-slate-400">{zone.lat.toFixed(4)}</span>
                                                 <span className="text-slate-400">{zone.lng.toFixed(4)}</span>
-                                                <span className={`${RISK_COLORS[zone.risk]?.text || "text-red-400"} font-medium`}>
-                                                    {zone.risk}
+                                                <span className="text-slate-400">{zone.radius}m</span>
+                                                <span className={`${RISK_COLORS[zone.risk_level]?.text || "text-red-400"} font-medium`}>
+                                                    {zone.risk_level}
                                                 </span>
-                                                <div className="flex justify-end">
-                                                    <button
-                                                        onClick={() => handleDelete(zone.id)}
-                                                        className="rounded-md bg-slate-700/80 px-3 py-1.5 text-xs font-medium text-white transition-colors hover:bg-red-600/80 cursor-pointer"
-                                                    >
-                                                        Delete
-                                                    </button>
-                                                </div>
                                             </div>
                                         ))}
                                     </div>
@@ -235,17 +224,24 @@ export default function RiskyZones() {
                                 <div className="flex items-center justify-between mb-4">
                                     <h2 className="text-sm font-semibold text-white tracking-wide uppercase">Map Preview</h2>
                                     <div className="flex gap-3 text-xs text-slate-500">
-                                        {Object.entries(RISK_COLORS).map(([level, color]) => (
-                                            <span key={level} className="flex items-center gap-1.5">
-                                                <span className={`w-2 h-2 rounded-full ${color.bg}`} />
-                                                {level}
-                                            </span>
-                                        ))}
+                                        <span className="flex items-center gap-1.5">
+                                            <span className="w-2 h-2 rounded-full bg-emerald-500" /> Low
+                                        </span>
+                                        <span className="flex items-center gap-1.5">
+                                            <span className="w-2 h-2 rounded-full bg-amber-500" /> Med
+                                        </span>
+                                        <span className="flex items-center gap-1.5">
+                                            <span className="w-2 h-2 rounded-full bg-red-500" /> High
+                                        </span>
                                     </div>
                                 </div>
 
-                                <MapPreview zones={zones} />
-                                <p className="text-xs text-slate-600 mt-3">Zones are shown by risk level. Use list actions to delete zones.</p>
+                                <div className="h-105 rounded-xl overflow-hidden border border-white/10">
+                                    <MapView zones={zones} tourists={[]} />
+                                </div>
+                                <p className="text-xs text-slate-600 mt-3">
+                                    Zones from database are shown as circles. New zones appear after adding.
+                                </p>
                             </div>
                         </div>
                     </div>

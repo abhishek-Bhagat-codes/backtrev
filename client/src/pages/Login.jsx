@@ -30,7 +30,7 @@ const Login = () => {
       storeTokenInLS(token);
       storeUserInLS(loggedInUser);
       toast.success("Login Successful");
-      navigate('/');
+      navigate('/dashboard');
     } catch (err) {
       setError(err.message || 'Login failed');
     } finally {
