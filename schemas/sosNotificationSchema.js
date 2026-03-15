@@ -10,7 +10,7 @@ const SOSNotificationSchema = new Schema({
   currentLocation:{ type: String },
   latitude:       { type: Number, required: true },
   longitude:      { type: Number, required: true },
-  status:         { type: String, enum: ['pending', 'acknowledged', 'resolved'], default: 'pending' },
+  status:         { type: String, enum: ['active', 'acknowledged', 'dispatched'], default: 'active' },
   message:        { type: String }, // Optional message from user
   createdAt:      { type: Date, default: Date.now },
   acknowledgedAt: { type: Date },

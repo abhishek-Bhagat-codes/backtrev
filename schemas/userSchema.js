@@ -10,6 +10,7 @@ const UserSchema = new Schema({
   email:            { type: String, required: true, unique: true, trim: true, lowercase: true },
   password:         { type: String, required: true }, // hash passwords before save
   aadhaarNumber:    { type: String, unique: true, sparse: true, trim: true },
+  role:             { type: String, enum: ['tourist','police','admin'], default: 'tourist' },
   createdAt:        { type: Date, default: Date.now }
 }, {
   collection: 'users',

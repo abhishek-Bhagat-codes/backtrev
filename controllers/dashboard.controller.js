@@ -6,12 +6,6 @@ const { SOSNotification } = require('../models/sosNotification.js');
 const { EmergencyNotification } = require('../models/emergencyNotification.js');
 const { GeoFencing } = require('../models/geoFencing.js');
 
-// Map backend status to frontend status
-const mapSOSStatusToFrontend = (status) => {
-    const map = { pending: 'active', acknowledged: 'acknowledged', resolved: 'dispatched' };
-    return map[status] || status;
-};
-
 module.exports = {
     // ------------------------------------
     //  FETCH ALL TOURISTS (Dashboard view)
@@ -26,7 +20,7 @@ module.exports = {
                     Trip.findOne({ userId: user._id }).sort({ createdAt: -1 }),
                     CurrentLocation.findOne({ userId: user._id }),
                     SafetyScore.findOne({ userId: user._id }),
-                    SOSNotification.findOne({ userId: user._id, status: 'pending' })
+                    SOSNotification.findOne({ userId: user._id, status: 'active' })
                 ]);
 
                 //if trip has intermediate stops, show them in itinerary, else show starting and ending location, else show no itinerary
@@ -95,7 +89,7 @@ module.exports = {
                     _type: 'SOS',
                     name: s.userId?.fullName || 'Unknown',
                     type: 'SOS',
-                    status: mapSOSStatusToFrontend(s.status),
+                    status: s.status,
                     touristId: uid ? String(uid) : '',
                     time: new Date(s.createdAt).toLocaleString()
                 });
